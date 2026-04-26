@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Rentals</title>
+</head>
+<body>
+  <h1>All Rental Listings</h1>
+
+  <a href="/rentals/new">➕ Add New Rental</a>
+
+  <ul>
+    <% rentals.forEach(rental => { %>
+      <li>
+        <% if (rental.image && rental.image.url) { %>
+          <img src="<%= rental.image.url %>" width="200">
+        <% } %>
+        <h3><%= rental.name %></h3>
+        <p><%= rental.address %></p>
+        <p>৳ <%= rental.rentPrice %></p>
+
+        <a href="/rentals/<%= rental._id %>">View</a> |
+        <a href="/rentals/<%= rental._id %>/edit">Edit</a> |
+
+        <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>

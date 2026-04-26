@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Rental</title>
+</head>
+<body>
+  <h1>Edit Rental</h1>
+
+  <form action="/rentals/<%= rental._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+
+    <input type="text" name="name" value="<%= rental.name %>" required><br>
+    <input type="text" name="address" value="<%= rental.address %>" required><br>
+    <input type="number" name="rentPrice" value="<%= rental.rentPrice %>" required><br>
+
+    <input type="number" name="beds" value="<%= rental.beds %>"><br>
+    <input type="number" name="baths" value="<%= rental.baths %>"><br>
+    <input type="number" name="dining" value="<%= rental.dining %>"><br>
+    <input type="number" name="drawing" value="<%= rental.drawing %>"><br>
+    <input type="number" name="porch" value="<%= rental.porch %>"><br>
+
+    <input type="number" name="squareFeet" value="<%= rental.squareFeet %>"><br>
+
+    <textarea name="description"><%= rental.description %></textarea><br>
+
+    <input type="date" name="availableFrom"
+      value="<%= rental.availableFrom ? rental.availableFrom.toISOString().split('T')[0] : '' %>"><br>
+
+    <input type="file" name="image"><br>
+      <button type="submit">Update</button>
+  </form>
+
+  <a href="/rentals/<%= rental._id %>">Cancel</a>
+</body>
+</html>

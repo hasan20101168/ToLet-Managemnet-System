@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rental Details</title>
+</head>
+<body>
+
+  <h1><%= rental.name %></h1>
+
+  <% if (rental.image && rental.image.url) { %>
+    <img src="<%= rental.image.url %>" width="400">
+  <% } %>
+
+  <p><strong>Address:</strong> <%= rental.address %></p>
+  <p><strong>Rent:</strong> ৳ <%= rental.rentPrice %></p>
+
+  <p><strong>Beds:</strong> <%= rental.beds %></p>
+  <p><strong>Baths:</strong> <%= rental.baths %></p>
+  <p><strong>Dining:</strong> <%= rental.dining %></p>
+  <p><strong>Drawing:</strong> <%= rental.drawing %></p>
+  <p><strong>Porch:</strong> <%= rental.porch %></p>
+  <p><strong>Size:</strong> <%= rental.squareFeet %> sqft</p>
+
+  <p><strong>Description:</strong> <%= rental.description %></p>
+  <p><strong>Available From:</strong> <%= rental.availableFrom %></p>
+
+  <a href="/rentals/<%= rental._id %>/edit">Edit</a>
+
+  <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST">
+    <button type="submit">Delete</button>
+  </form>
+
+  <br>
+  <a href="/rentals">Back</a>
+
+</body>
+</html>

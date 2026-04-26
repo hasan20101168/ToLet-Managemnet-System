@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Rental</title>
+</head>
+<body>
+  <h1>Add New Rental</h1>
+
+  <form action="/rentals" method="POST" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Name" required><br>
+    <input type="text" name="address" placeholder="Address" required><br>
+    <input type="number" name="rentPrice" placeholder="Rent Price" required><br>
+
+    <input type="number" name="beds" placeholder="Beds"><br>
+    <input type="number" name="baths" placeholder="Baths"><br>
+    <input type="number" name="dining" placeholder="Dining"><br>
+    <input type="number" name="drawing" placeholder="Drawing"><br>
+    <input type="number" name="porch" placeholder="Porch"><br>
+
+    <input type="number" name="squareFeet" placeholder="Square Feet"><br>
+
+    <textarea name="description" placeholder="Description"></textarea><br>
+
+    <input type="date" name="availableFrom"><br>
+    <input type="file" name="image"><br>
+
+    <button type="submit">Create</button>
+  </form>
+
+  <a href="/rentals">Back</a>
+</body>
+</html>
