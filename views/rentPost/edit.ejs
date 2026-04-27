@@ -1,34 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Edit Rental</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
-  <h1>Edit Rental</h1>
 
-  <form action="/rentals/<%= rental._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+<div class="container mt-5">
 
-    <input type="text" name="name" value="<%= rental.name %>" required><br>
-    <input type="text" name="address" value="<%= rental.address %>" required><br>
-    <input type="number" name="rentPrice" value="<%= rental.rentPrice %>" required><br>
+  <div class="form-card">
 
-    <input type="number" name="beds" value="<%= rental.beds %>"><br>
-    <input type="number" name="baths" value="<%= rental.baths %>"><br>
-    <input type="number" name="dining" value="<%= rental.dining %>"><br>
-    <input type="number" name="drawing" value="<%= rental.drawing %>"><br>
-    <input type="number" name="porch" value="<%= rental.porch %>"><br>
+    <h3 class="mb-4">✏️ Edit Rental</h3>
 
-    <input type="number" name="squareFeet" value="<%= rental.squareFeet %>"><br>
+    <form action="/rentals/<%= rental._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
 
-    <textarea name="description"><%= rental.description %></textarea><br>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label>Property Name</label>
+          <input type="text" name="name" value="<%= rental.name %>" class="form-control">
+        </div>
 
-    <input type="date" name="availableFrom"
-      value="<%= rental.availableFrom ? rental.availableFrom.toISOString().split('T')[0] : '' %>"><br>
+        <div class="col-md-6">
+          <label>Rent Price</label>
+          <input type="number" name="rentPrice" value="<%= rental.rentPrice %>" class="form-control">
+        </div>
+      </div>
 
-    <input type="file" name="image"><br>
-      <button type="submit">Update</button>
-  </form>
+      <div class="mb-3">
+        <input type="text" name="address" value="<%= rental.address %>" class="form-control">
+      </div>
 
-  <a href="/rentals/<%= rental._id %>">Cancel</a>
+      <div class="row mb-3">
+        <div class="col"><input type="number" name="beds" value="<%= rental.beds %>" class="form-control"></div>
+        <div class="col"><input type="number" name="baths" value="<%= rental.baths %>" class="form-control"></div>
+        <div class="col"><input type="number" name="dining" value="<%= rental.dining %>" class="form-control"></div>
+        <div class="col"><input type="number" name="drawing" value="<%= rental.drawing %>" class="form-control"></div>
+        <div class="col"><input type="number" name="porch" value="<%= rental.porch %>" class="form-control"></div>
+      </div>
+
+      <div class="mb-3">
+        <input type="number" name="squareFeet" value="<%= rental.squareFeet %>" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <textarea name="description" class="form-control"><%= rental.description %></textarea>
+      </div>
+
+      <div class="mb-3">
+        <input type="date" name="availableFrom"
+          value="<%= rental.availableFrom ? rental.availableFrom.toISOString().split('T')[0] : '' %>"
+          class="form-control">
+      </div>
+
+      <!-- Current Image -->
+      <% if (rental.image && rental.image.url) { %>
+        <img src="<%= rental.image.url %>" class="preview-img">
+      <% } %>
+
+      <!-- Upload New -->
+      <div class="mb-3">
+        <input type="file" name="image" class="form-control" onchange="previewImage(event)">
+        <img id="imagePreview" class="preview-img" style="display:none;">
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="/rentals/<%= rental._id %>" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-primary">Update Rental</button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script src="/js/main.js"></script>
 </body>
 </html>

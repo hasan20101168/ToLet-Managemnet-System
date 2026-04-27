@@ -1,32 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Create Rental</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
-  <h1>Add New Rental</h1>
 
-  <form action="/rentals" method="POST" enctype="multipart/form-data">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="text" name="address" placeholder="Address" required><br>
-    <input type="number" name="rentPrice" placeholder="Rent Price" required><br>
+<div class="container mt-5">
 
-    <input type="number" name="beds" placeholder="Beds"><br>
-    <input type="number" name="baths" placeholder="Baths"><br>
-    <input type="number" name="dining" placeholder="Dining"><br>
-    <input type="number" name="drawing" placeholder="Drawing"><br>
-    <input type="number" name="porch" placeholder="Porch"><br>
+  <div class="form-card">
 
-    <input type="number" name="squareFeet" placeholder="Square Feet"><br>
+    <h3 class="mb-4">➕ Add New Rental</h3>
 
-    <textarea name="description" placeholder="Description"></textarea><br>
+    <form action="/rentals" method="POST" enctype="multipart/form-data">
 
-    <input type="date" name="availableFrom"><br>
-    <input type="file" name="image"><br>
+      <!-- Basic Info -->
+      <div class="form-section-title">Basic Information</div>
 
-    <button type="submit">Create</button>
-  </form>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Property Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
 
-  <a href="/rentals">Back</a>
+        <div class="col-md-6">
+          <label class="form-label">Rent Price (৳)</label>
+          <input type="number" name="rentPrice" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Address</label>
+        <input type="text" name="address" class="form-control" required>
+      </div>
+
+      <!-- Features -->
+      <div class="form-section-title">Property Features</div>
+
+      <div class="row mb-3">
+        <div class="col"><input type="number" name="beds" class="form-control" placeholder="Beds"></div>
+        <div class="col"><input type="number" name="baths" class="form-control" placeholder="Baths"></div>
+        <div class="col"><input type="number" name="dining" class="form-control" placeholder="Dining"></div>
+        <div class="col"><input type="number" name="drawing" class="form-control" placeholder="Drawing"></div>
+        <div class="col"><input type="number" name="porch" class="form-control" placeholder="Porch"></div>
+      </div>
+
+      <div class="mb-3">
+        <input type="number" name="squareFeet" class="form-control" placeholder="Square Feet">
+      </div>
+
+      <!-- Description -->
+      <div class="form-section-title">Description</div>
+
+      <div class="mb-3">
+        <textarea name="description" class="form-control" rows="4"></textarea>
+      </div>
+
+      <!-- Availability -->
+      <div class="mb-3">
+        <label class="form-label">Available From</label>
+        <input type="date" name="availableFrom" class="form-control">
+      </div>
+
+      <!-- Image -->
+      <div class="form-section-title">Upload Image</div>
+
+      <div class="mb-3">
+        <input type="file" name="image" class="form-control" onchange="previewImage(event)">
+        <img id="imagePreview" class="preview-img" style="display:none;">
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-between">
+        <a href="/rentals" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-primary">Create Rental</button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script src="/js/main.js"></script>
 </body>
 </html>

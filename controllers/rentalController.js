@@ -92,8 +92,58 @@ exports.deleteRental = async (req, res) => {
 
 // Show all rentals
 exports.renderAllRentals = async (req, res) => {
-  const rentals = await Rental.find();
-  res.render("rentPost/index", { rentals });
+  try {
+    const { search, minPrice, maxPrice, beds, availableFrom, page = 1 } = req.query;
+
+    let query = {};
+
+    // 🔍 Search
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { address: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // 💰 Price
+    if (minPrice || maxPrice) {
+      query.rentPrice = {};
+      if (minPrice) query.rentPrice.$gte = Number(minPrice);
+      if (maxPrice) query.rentPrice.$lte = Number(maxPrice);
+    }
+
+    // 🛏 Beds
+    if (beds) {
+      query.beds = { $gte: Number(beds) };
+    }
+
+    // 📅 Available
+    if (availableFrom) {
+      query.availableFrom = { $gte: new Date(availableFrom) };
+    }
+
+    // 🔢 Pagination
+    const limit = 8; // items per page
+    const skip = (page - 1) * limit;
+
+    const total = await Rental.countDocuments(query);
+
+    const rentals = await Rental.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render("rentPost/index", {
+      rentals,
+      filters: req.query,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / limit),
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading rentals");
+  }
 };
 
 // Show create form

@@ -1,37 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Rental Details</title>
+  <meta charset="UTF-8">
+  <title><%= rental.name %></title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <!-- <style>
+    .hero-img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .info-card {
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .price {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0d6efd;
+    }
+
+    .feature-box {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin: 5px;
+      display: inline-block;
+    }
+
+    .description {
+      line-height: 1.6;
+    }
+  </style> -->
 </head>
+
 <body>
 
-  <h1><%= rental.name %></h1>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-primary">
+  <div class="container">
+    <a href="/rentals" class="navbar-brand text-white">🏠 To-Let System</a>
+  </div>
+</nav>
 
+<div class="container mt-4">
+
+  <!-- Title -->
+  <h2 class="mb-3"><%= rental.name %></h2>
+
+  <!-- Image -->
   <% if (rental.image && rental.image.url) { %>
-    <img src="<%= rental.image.url %>" width="400">
+    <img src="<%= rental.image.url %>" class="hero-img mb-4">
+  <% } else { %>
+    <img src="https://via.placeholder.com/900x400?text=No+Image" class="hero-img mb-4">
   <% } %>
 
-  <p><strong>Address:</strong> <%= rental.address %></p>
-  <p><strong>Rent:</strong> ৳ <%= rental.rentPrice %></p>
+  <div class="row">
 
-  <p><strong>Beds:</strong> <%= rental.beds %></p>
-  <p><strong>Baths:</strong> <%= rental.baths %></p>
-  <p><strong>Dining:</strong> <%= rental.dining %></p>
-  <p><strong>Drawing:</strong> <%= rental.drawing %></p>
-  <p><strong>Porch:</strong> <%= rental.porch %></p>
-  <p><strong>Size:</strong> <%= rental.squareFeet %> sqft</p>
+    <!-- Left Section -->
+    <div class="col-lg-8">
 
-  <p><strong>Description:</strong> <%= rental.description %></p>
-  <p><strong>Available From:</strong> <%= rental.availableFrom %></p>
+      <!-- Address -->
+      <p class="text-muted">📍 <%= rental.address %></p>
 
-  <a href="/rentals/<%= rental._id %>/edit">Edit</a>
+      <!-- Features -->
+      <div class="mb-3">
+        <span class="feature-box">🛏 <%= rental.beds || 0 %> Beds</span>
+        <span class="feature-box">🛁 <%= rental.baths || 0 %> Baths</span>
+        <span class="feature-box">🍽 <%= rental.dining || 0 %> Dining</span>
+        <span class="feature-box">🛋 <%= rental.drawing || 0 %> Drawing</span>
+        <span class="feature-box">🚗 <%= rental.porch || 0 %> Porch</span>
+        <span class="feature-box">📐 <%= rental.squareFeet || 0 %> sqft</span>
+      </div>
 
-  <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST">
-    <button type="submit">Delete</button>
-  </form>
+      <!-- Description -->
+      <div class="info-card mb-3">
+        <h5>Description</h5>
+        <p class="description"><%= rental.description || "No description provided." %></p>
+      </div>
 
-  <br>
-  <a href="/rentals">Back</a>
+      <!-- Availability -->
+      <div class="info-card">
+        <h6>Available From:</h6>
+        <p>
+          <%= rental.availableFrom 
+              ? new Date(rental.availableFrom).toDateString() 
+              : "Not specified" %>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Right Section -->
+    <div class="col-lg-4">
+
+      <div class="info-card">
+
+        <p class="price">৳ <%= rental.rentPrice %></p>
+
+        <hr>
+
+        <!-- Actions -->
+        <a href="/rentals/<%= rental._id %>/edit" class="btn btn-warning w-100 mb-2">
+          ✏️ Edit
+        </a>
+
+        <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST">
+          <button class="btn btn-danger w-100 mb-2" onclick="return confirm('Delete this rental?')">
+            🗑 Delete
+          </button>
+        </form>
+
+        <a href="/rentals" class="btn btn-secondary w-100">
+          ⬅ Back to Listings
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

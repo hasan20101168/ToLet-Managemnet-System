@@ -23,15 +23,77 @@
 
 <div class="container mt-4">
 
-  <h2 class="mb-4">Available Rentals</h2>
+  <h2 class="mb-3">Available Rentals</h2>
 
+  <!-- 🔍 FILTER BAR -->
+  <div class="card p-3 mb-4 shadow-sm">
+    <form method="GET" action="/rentals">
+
+      <!-- IMPORTANT: reset page on new search -->
+      <input type="hidden" name="page" value="1">
+
+      <div class="row g-2">
+
+        <div class="col-md-3">
+          <input type="text" name="search" class="form-control"
+            placeholder="Search name or location"
+            value="<%= filters?.search || '' %>">
+        </div>
+
+        <div class="col-md-2">
+          <input type="number" name="minPrice" class="form-control"
+            placeholder="Min Price"
+            value="<%= filters?.minPrice || '' %>">
+        </div>
+
+        <div class="col-md-2">
+          <input type="number" name="maxPrice" class="form-control"
+            placeholder="Max Price"
+            value="<%= filters?.maxPrice || '' %>">
+        </div>
+
+        <div class="col-md-2">
+          <select name="beds" class="form-select">
+            <option value="">Beds</option>
+            <option value="1" <%= filters?.beds == 1 ? 'selected' : '' %>>1+</option>
+            <option value="2" <%= filters?.beds == 2 ? 'selected' : '' %>>2+</option>
+            <option value="3" <%= filters?.beds == 3 ? 'selected' : '' %>>3+</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <input type="date" name="availableFrom" class="form-control"
+            value="<%= filters?.availableFrom || '' %>">
+        </div>
+
+        <div class="col-md-1 d-grid">
+          <button class="btn btn-primary">Go</button>
+        </div>
+
+      </div>
+
+      <div class="mt-2">
+        <a href="/rentals" class="btn btn-sm btn-outline-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Info -->
+  <p class="text-muted">
+    Page <strong><%= currentPage %></strong> of <strong><%= totalPages %></strong>
+  </p>
+
+  <!-- Listings -->
   <div class="row g-4">
+
+    <% if (rentals.length === 0) { %>
+      <p>No rentals found.</p>
+    <% } %>
 
     <% rentals.forEach(rental => { %>
       <div class="col-md-4 col-lg-3">
         <div class="card h-100">
 
-          <!-- Image -->
           <% if (rental.image && rental.image.url) { %>
             <img src="<%= rental.image.url %>" class="card-img-top">
           <% } else { %>
@@ -77,11 +139,45 @@
 
   </div>
 
+  <!-- 🔢 PAGINATION -->
+  <% if (totalPages > 1) { %>
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+
+        <!-- Prev -->
+        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+          <a class="page-link"
+            href="?<%= new URLSearchParams({...filters, page: currentPage - 1}).toString() %>">
+            Previous
+          </a>
+        </li>
+
+        <!-- Numbers -->
+        <% for(let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link"
+              href="?<%= new URLSearchParams({...filters, page: i}).toString() %>">
+              <%= i %>
+            </a>
+          </li>
+        <% } %>
+
+        <!-- Next -->
+        <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+          <a class="page-link"
+            href="?<%= new URLSearchParams({...filters, page: currentPage + 1}).toString() %>">
+            Next
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  <% } %>
+
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="/js/main.js"></script>
 
 </body>
 </html>
