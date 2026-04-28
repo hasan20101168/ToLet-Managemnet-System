@@ -1,0 +1,9 @@
+body {
+  background: linear-gradient(135deg, #4e73df, #1cc88a);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.auth-box {
+  width: 350px;
+  border-radius: 10px;
+}

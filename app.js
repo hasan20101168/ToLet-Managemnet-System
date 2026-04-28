@@ -1,27 +1,41 @@
-require("dotenv").config(); // 🔥 MUST be at top
+require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const path = require("path");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 const rentalRoutes = require("./routes/rentalRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
 // ================= MIDDLEWARE =================
-
-// Parse form data
 app.use(express.urlencoded({ extended: true }));
-
-// Parse JSON
 app.use(express.json());
-
-// Method override (PUT, DELETE)
 app.use(methodOverride("_method"));
-
-// Static files (CSS, images later)
 app.use(express.static(path.join(__dirname, "public")));
+
+// ================= SESSION =================
+app.use(session({
+  secret: process.env.SESSION_SECRET || "secretkey",
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: "mongodb://127.0.0.1:27017/toletDB"
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24
+  }
+}));
+
+// 👉 Make user available in all EJS views
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.user;
+  next();
+});
 
 // ================= VIEW ENGINE =================
 app.set("view engine", "ejs");
@@ -29,19 +43,21 @@ app.set("views", path.join(__dirname, "views"));
 
 // ================= DATABASE =================
 mongoose.connect("mongodb://127.0.0.1:27017/toletDB")
-.then(() => {
-  console.log("MongoDB connected");
-})
-.catch((err) => {
-  console.log("DB Error:", err);
-});
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.log("DB Error:", err));
 
 // ================= ROUTES =================
-app.use("/rentals", rentalRoutes);
+app.use("/", authRoutes);          // auth routes (login/register)
+app.use("/rentals", rentalRoutes); // rental routes
 
 // Root redirect
 app.get("/", (req, res) => {
-  res.redirect("/rentals");
+  res.redirect("/"); // landing page
+});
+
+// ================= ERROR =================
+app.use((req, res) => {
+  res.status(404).send("Page Not Found");
 });
 
 // ================= SERVER =================
