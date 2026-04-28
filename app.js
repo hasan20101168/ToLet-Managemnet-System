@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); //m.hasan
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -31,7 +31,7 @@ app.use(session({
   }
 }));
 
-// 👉 Make user available in all EJS views
+//  Make user available in all EJS views
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user;
   next();
