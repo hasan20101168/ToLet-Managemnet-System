@@ -1,18 +1,9 @@
 const mongoose = require("mongoose");
 
 const rentalSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  rentPrice: {
-    type: Number,
-    required: true,
-  },
+  name: String,
+  address: String,
+  rentPrice: Number,
   beds: Number,
   baths: Number,
   dining: Number,
@@ -20,13 +11,19 @@ const rentalSchema = new mongoose.Schema({
   porch: Number,
   squareFeet: Number,
   description: String,
+  availableFrom: Date,
+
   image: {
     url: String,
-    filename: String,
+    filename: String
   },
-  availableFrom: {
-    type: Date,
-  },
+
+  // 🔥 OWNER LINK
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Rental", rentalSchema);

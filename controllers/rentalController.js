@@ -1,5 +1,10 @@
 const Rental = require("../models/Rental");
 const { cloudinary } = require("../config/cloudinary");
+const mongoose = require("mongoose");
+
+
+// ================= HELPER =================
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 
 // ================= API METHODS =================
@@ -8,6 +13,10 @@ const { cloudinary } = require("../config/cloudinary");
 exports.createRental = async (req, res) => {
   try {
     const rental = new Rental(req.body);
+
+    if (req.session.user) {
+      rental.owner = req.session.user._id;
+    }
 
     if (req.file) {
       rental.image = {
@@ -18,41 +27,68 @@ exports.createRental = async (req, res) => {
 
     const saved = await rental.save();
     res.status(201).json(saved);
+
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
+
 // READ ALL (API)
 exports.getAllRentals = async (req, res) => {
   try {
-    const rentals = await Rental.find();
+    const rentals = await Rental.find()
+      .populate("owner", "name email")
+      .lean();
+
     res.json(rentals);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // READ ONE (API)
 exports.getRentalById = async (req, res) => {
   try {
-    const rental = await Rental.findById(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const rental = await Rental.findById(id)
+      .populate("owner", "name email");
+
+    if (!rental) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
     res.json(rental);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+
 // UPDATE (API)
 exports.updateRental = async (req, res) => {
   try {
-    const rental = await Rental.findById(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const rental = await Rental.findById(id);
+    if (!rental) return res.status(404).json({ message: "Not found" });
 
     Object.assign(rental, req.body);
 
     if (req.file) {
-      // 🔥 delete old image
-      if (rental.image && rental.image.filename) {
+      if (rental.image?.filename) {
         await cloudinary.uploader.destroy(rental.image.filename);
       }
 
@@ -64,40 +100,49 @@ exports.updateRental = async (req, res) => {
 
     await rental.save();
     res.json(rental);
+
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
+
 // DELETE (API)
 exports.deleteRental = async (req, res) => {
   try {
-    const rental = await Rental.findById(req.params.id);
+    const { id } = req.params;
 
-    // 🔥 delete image from cloudinary
-    if (rental.image && rental.image.filename) {
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const rental = await Rental.findById(id);
+    if (!rental) return res.status(404).json({ message: "Not found" });
+
+    if (rental.image?.filename) {
       await cloudinary.uploader.destroy(rental.image.filename);
     }
 
-    await Rental.findByIdAndDelete(req.params.id);
+    await rental.deleteOne();
 
     res.json({ message: "Deleted successfully" });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 
+
 // ================= VIEW METHODS =================
 
-// Show all rentals
+// ALL RENTALS (Tenant view)
 exports.renderAllRentals = async (req, res) => {
   try {
     const { search, minPrice, maxPrice, beds, availableFrom, page = 1 } = req.query;
 
     let query = {};
 
-    // 🔍 Search
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -105,33 +150,29 @@ exports.renderAllRentals = async (req, res) => {
       ];
     }
 
-    // 💰 Price
     if (minPrice || maxPrice) {
       query.rentPrice = {};
       if (minPrice) query.rentPrice.$gte = Number(minPrice);
       if (maxPrice) query.rentPrice.$lte = Number(maxPrice);
     }
 
-    // 🛏 Beds
-    if (beds) {
-      query.beds = { $gte: Number(beds) };
-    }
+    if (beds) query.beds = { $gte: Number(beds) };
 
-    // 📅 Available
     if (availableFrom) {
       query.availableFrom = { $gte: new Date(availableFrom) };
     }
 
-    // 🔢 Pagination
-    const limit = 8; // items per page
+    const limit = 8;
     const skip = (page - 1) * limit;
 
     const total = await Rental.countDocuments(query);
 
     const rentals = await Rental.find(query)
+      .populate("owner", "name")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.render("rentPost/index", {
       rentals,
@@ -146,70 +187,142 @@ exports.renderAllRentals = async (req, res) => {
   }
 };
 
-// Show create form
+
+// OWNER DASHBOARD
+exports.ownerDashboard = async (req, res) => {
+  try {
+    const rentals = await Rental.find({
+      owner: req.session.user._id
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.render("dashboard/owner", { rentals });
+
+  } catch (err) {
+    console.error(err);
+    res.send("Error loading dashboard");
+  }
+};
+
+
+// CREATE FORM
 exports.renderCreateForm = (req, res) => {
   res.render("rentPost/create");
 };
 
+
 // CREATE (VIEW)
 exports.createRentalView = async (req, res) => {
-  const rental = new Rental(req.body);
+  try {
+    const rental = new Rental(req.body);
 
-  if (req.file) {
-    rental.image = {
-      url: req.file.path,
-      filename: req.file.filename,
-    };
+    rental.owner = req.session.user._id;
+
+    if (req.file) {
+      rental.image = {
+        url: req.file.path,
+        filename: req.file.filename
+      };
+    }
+
+    await rental.save();
+
+    res.redirect("/rentals/owner/dashboard");
+
+  } catch (err) {
+    console.error(err);
+    res.send("Error creating rental");
   }
-
-  await rental.save();
-  res.redirect("/rentals");
 };
 
-// Show single rental
+
+// SINGLE RENTAL VIEW (🔥 FIXED)
 exports.renderSingleRental = async (req, res) => {
-  const rental = await Rental.findById(req.params.id);
-  res.render("rentPost/show", { rental });
+  try {
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).send("Invalid rental ID");
+    }
+
+    const rental = await Rental.findById(id)
+      .populate("owner", "name");
+
+    if (!rental) return res.send("Rental not found");
+
+    res.render("rentPost/show", { rental });
+
+  } catch (err) {
+    console.error(err);
+    res.send("Error loading rental");
+  }
 };
 
-// Show edit form
+
+// EDIT FORM
 exports.renderEditForm = async (req, res) => {
-  const rental = await Rental.findById(req.params.id);
+  const { id } = req.params;
+
+  if (!isValidId(id)) return res.send("Invalid ID");
+
+  const rental = await Rental.findById(id);
   res.render("rentPost/edit", { rental });
 };
 
+
 // UPDATE (VIEW)
 exports.updateRentalView = async (req, res) => {
-  const rental = await Rental.findById(req.params.id);
+  try {
+    const { id } = req.params;
 
-  Object.assign(rental, req.body);
+    if (!isValidId(id)) return res.send("Invalid ID");
 
-  if (req.file) {
-    // 🔥 delete old image
-    if (rental.image && rental.image.filename) {
-      await cloudinary.uploader.destroy(rental.image.filename);
+    const rental = await Rental.findById(id);
+
+    Object.assign(rental, req.body);
+
+    if (req.file) {
+      if (rental.image?.filename) {
+        await cloudinary.uploader.destroy(rental.image.filename);
+      }
+
+      rental.image = {
+        url: req.file.path,
+        filename: req.file.filename,
+      };
     }
 
-    rental.image = {
-      url: req.file.path,
-      filename: req.file.filename,
-    };
-  }
+    await rental.save();
 
-  await rental.save();
-  res.redirect(`/rentals/${rental._id}`);
+    res.redirect(`/rentals/${rental._id}`);
+
+  } catch (err) {
+    console.error(err);
+    res.send("Update failed");
+  }
 };
+
 
 // DELETE (VIEW)
 exports.deleteRentalView = async (req, res) => {
-  const rental = await Rental.findById(req.params.id);
+  try {
+    const { id } = req.params;
 
-  // 🔥 delete image
-  if (rental.image && rental.image.filename) {
-    await cloudinary.uploader.destroy(rental.image.filename);
+    if (!isValidId(id)) return res.send("Invalid ID");
+
+    const rental = await Rental.findById(id);
+
+    if (rental.image?.filename) {
+      await cloudinary.uploader.destroy(rental.image.filename);
+    }
+
+    await rental.deleteOne();
+
+    res.redirect("/rentals");
+
+  } catch (err) {
+    console.error(err);
+    res.send("Delete failed");
   }
-
-  await Rental.findByIdAndDelete(req.params.id);
-
-  res.redirect("/rentals");
 };

@@ -1,11 +1,13 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
-// REGISTER
+
+// ================= REGISTER =================
 exports.register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.send("Email already registered");
 
@@ -19,13 +21,15 @@ exports.register = async (req, res) => {
     });
 
     res.redirect("/login");
+
   } catch (err) {
     console.error(err);
     res.send("Registration failed");
   }
 };
 
-// LOGIN (User)
+
+// ================= LOGIN (USER) =================
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -36,16 +40,33 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.send("Wrong password");
 
-    req.session.user = user;
+    // ✅ Store minimal session data (BEST PRACTICE)
+    req.session.user = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+
+    // 🔥 ROLE-BASED REDIRECT
+    if (user.role === "owner") {
+      return res.redirect("/rentals/owner/dashboard");
+    }
+
+    if (user.role === "tenant") {
+      return res.redirect("/rentals");
+    }
 
     res.redirect("/rentals");
+
   } catch (err) {
     console.error(err);
     res.send("Login failed");
   }
 };
 
-// ADMIN LOGIN
+
+// ================= ADMIN LOGIN =================
 exports.adminLogin = (req, res) => {
   const { email, password } = req.body;
 
@@ -58,13 +79,15 @@ exports.adminLogin = (req, res) => {
       email
     };
 
-    return res.redirect("/rentals"); // better than /admin (unless you have that route)
+    // 🔥 Redirect to admin dashboard
+    return res.redirect("/admin/dashboard");
   }
 
   res.send("Invalid admin credentials");
 };
 
-// LOGOUT
+
+// ================= LOGOUT =================
 exports.logout = (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");

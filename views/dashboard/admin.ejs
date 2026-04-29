@@ -1,0 +1,16 @@
+
+<h2>Admin Panel</h2>
+
+<h4>Users</h4>
+<ul>
+  <% users.forEach(u => { %>
+    <li><%= u.email %> - <%= u.role %></li>
+  <% }) %>
+</ul>
+
+<h4>Rentals</h4>
+<ul>
+  <% rentals.forEach(r => { %>
+    <li><%= r.name %></li>
+  <% }) %>
+</ul>

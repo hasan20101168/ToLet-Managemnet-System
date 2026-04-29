@@ -9,6 +9,8 @@ const MongoStore = require("connect-mongo");
 
 const rentalRoutes = require("./routes/rentalRoutes");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
 
 const app = express();
 
@@ -49,6 +51,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/toletDB")
 // ================= ROUTES =================
 app.use("/", authRoutes);          // auth routes (login/register)
 app.use("/rentals", rentalRoutes); // rental routes
+app.use("/", adminRoutes);
 
 // Root redirect
 app.get("/", (req, res) => {
