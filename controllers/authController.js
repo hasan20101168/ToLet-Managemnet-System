@@ -40,31 +40,37 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.send("Wrong password");
 
-    // ✅ Store minimal session data (BEST PRACTICE)
-    req.session.user = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    };
+    // 🔥 REGENERATE SESSION (CRITICAL FIX)
+    req.session.regenerate(err => {
+      if (err) {
+        console.log(err);
+        return res.send("Session error");
+      }
 
-    // 🔥 ROLE-BASED REDIRECT
-    if (user.role === "owner") {
-      return res.redirect("/rentals/owner/dashboard");
-    }
+      req.session.user = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      };
 
-    if (user.role === "tenant") {
-      return res.redirect("/rentals");
-    }
+      // Role-based redirect
+      if (user.role === "owner") {
+        return res.redirect("/rentals/owner/dashboard");
+      }
 
-    res.redirect("/rentals");
+      if (user.role === "tenant") {
+        return res.redirect("/rentals");
+      }
+
+      res.redirect("/rentals");
+    });
 
   } catch (err) {
     console.error(err);
     res.send("Login failed");
   }
 };
-
 
 // ================= ADMIN LOGIN =================
 exports.adminLogin = (req, res) => {
@@ -89,7 +95,10 @@ exports.adminLogin = (req, res) => {
 
 // ================= LOGOUT =================
 exports.logout = (req, res) => {
-  req.session.destroy(() => {
+  req.session.destroy(err => {
+    if (err) console.log(err);
+
+    res.clearCookie("connect.sid"); // 🔥 REQUIRED
     res.redirect("/login");
   });
 };

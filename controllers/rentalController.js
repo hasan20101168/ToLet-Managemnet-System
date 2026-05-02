@@ -1,5 +1,8 @@
 const Rental = require("../models/Rental");
 const { cloudinary } = require("../config/cloudinary");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({accessToken: mapBoxToken});
 const mongoose = require("mongoose");
 
 
@@ -215,7 +218,12 @@ exports.renderCreateForm = (req, res) => {
 // CREATE (VIEW)
 exports.createRentalView = async (req, res) => {
   try {
+    const geoData = await geocoder.forwardGeocode({
+      query: req.body.address,
+      limit: 1
+    }).send()
     const rental = new Rental(req.body);
+    rental.geometry = geoData.body.features[0].geometry;
 
     rental.owner = req.session.user._id;
 
@@ -227,6 +235,7 @@ exports.createRentalView = async (req, res) => {
     }
 
     await rental.save();
+    // console.log(rental);
 
     res.redirect("/rentals/owner/dashboard");
 

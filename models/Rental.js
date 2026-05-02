@@ -2,6 +2,17 @@ const mongoose = require("mongoose");
 
 const rentalSchema = new mongoose.Schema({
   name: String,
+  geometry: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
   address: String,
   rentPrice: Number,
   beds: Number,

@@ -25,6 +25,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || "secretkey",
   resave: false,
   saveUninitialized: false,
+  unset: "destroy", // 🔥 ADD THIS
   store: MongoStore.create({
     mongoUrl: "mongodb://127.0.0.1:27017/toletDB"
   }),
