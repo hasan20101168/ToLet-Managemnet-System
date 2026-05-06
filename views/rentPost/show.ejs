@@ -9,6 +9,10 @@
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/styles.css">
+  <!-- Includes the Mapbox GL JS CSS stylesheet -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.css" rel="stylesheet">
+<!-- Imports the Mapbox GL JS bundle -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.js"></script>
 
   <!-- <style>
     .hero-img {
@@ -132,10 +136,17 @@
 
   </div>
 
+  <div id="map" style="width: 800px; height: 600px;"></div>
+
 </div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
+  const rental = <%- JSON.stringify(rental) %>
+</script>
+<script src="/js/showPageMap.js"></script>
 
 </body>
 </html>
