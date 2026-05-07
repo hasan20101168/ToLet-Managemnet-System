@@ -2,151 +2,638 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title><%= rental.name %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= rental.name %> — To-Let</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
+  <!-- Mapbox -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.js"></script>
+
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/styles.css">
-  <!-- Includes the Mapbox GL JS CSS stylesheet -->
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.css" rel="stylesheet">
-<!-- Imports the Mapbox GL JS bundle -->
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.js"></script>
+  <!-- <link rel="stylesheet" href="/css/styles.css"> -->
 
-  <!-- <style>
-    .hero-img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 12px;
+  <style>
+    :root {
+      --cream: #FAF7F2;
+      --ink: #1A1A18;
+      --ink-soft: #4A4A42;
+      --accent: #C8863A;
+      --accent-light: #F0D9BC;
+      --accent-pale: #FDF5EC;
+      --border: #E8E2D8;
+      --surface: #FFFFFF;
+      --shadow-sm: 0 2px 8px rgba(26,26,24,0.06);
+      --shadow-md: 0 8px 32px rgba(26,26,24,0.10);
+      --shadow-lg: 0 24px 64px rgba(26,26,24,0.14);
+      --radius: 16px;
+      --radius-sm: 10px;
     }
 
-    .info-card {
-      border-radius: 12px;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .price {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #0d6efd;
-    }
-
-    .feature-box {
-      background: #f8f9fa;
-      padding: 10px 15px;
-      border-radius: 10px;
-      margin: 5px;
-      display: inline-block;
-    }
-
-    .description {
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
       line-height: 1.6;
     }
-  </style> -->
+
+    /* ── HERO ─────────────────────────────────── */
+    .hero-section {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 8s ease;
+    }
+
+    .hero-image:hover { transform: scale(1.03); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(26,26,24,0.55) 80%,
+        rgba(26,26,24,0.80) 100%
+      );
+    }
+
+    .hero-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2.5rem 3rem;
+      color: #fff;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .hero-address {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.82);
+    }
+
+    /* ── LAYOUT ───────────────────────────────── */
+    .page-body {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .page-body { grid-template-columns: 1fr; }
+      .hero-content { padding: 1.5rem; }
+    }
+
+    /* ── CARDS ────────────────────────────────── */
+    .card-block {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .card-block:hover { box-shadow: var(--shadow-md); }
+
+    .card-label {
+      font-size: 0.70rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── FEATURES GRID ────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .feature-tile {
+      background: var(--accent-pale);
+      border: 1px solid var(--accent-light);
+      border-radius: var(--radius-sm);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .feature-tile:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .feature-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .feature-name {
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── DESCRIPTION ──────────────────────────── */
+    .description-text {
+      color: var(--ink-soft);
+      font-size: 0.97rem;
+      line-height: 1.85;
+    }
+
+    /* ── AVAILABILITY PILL ────────────────────── */
+    .availability-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #EDFAF3;
+      border: 1px solid #A8E6C3;
+      color: #1E7A48;
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .avail-dot {
+      width: 8px;
+      height: 8px;
+      background: #2ECC71;
+      border-radius: 50%;
+      animation: pulse-green 1.8s infinite;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+    }
+
+    /* ── STICKY SIDEBAR ───────────────────────── */
+    .sidebar { position: sticky; top: 1.5rem; }
+
+    .price-block {
+      background: var(--ink);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .price-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .price-currency {
+      font-size: 1.3rem;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .price-period {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 4px;
+    }
+
+    .price-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      margin: 1.25rem 0;
+    }
+
+    .contact-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    /* ── BUTTONS ──────────────────────────────── */
+    .btn-primary-accent {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .btn-primary-accent:hover {
+      background: #B5732C;
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(200,134,58,0.4);
+    }
+
+    .btn-outline-soft {
+      background: transparent;
+      color: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius-sm);
+      padding: 11px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-outline-soft:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.4);
+      color: #fff;
+    }
+
+    .btn-danger-soft {
+      background: #FFF0EE;
+      color: #C0392B;
+      border: 1px solid #F5C2BB;
+      border-radius: var(--radius-sm);
+      padding: 11px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-danger-soft:hover {
+      background: #FDDCDA;
+      border-color: #E8A49C;
+    }
+
+    /* ── ACTIONS CARD ─────────────────────────── */
+    .actions-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .actions-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0.4rem 0;
+    }
+
+    .btn-back {
+      background: var(--cream);
+      color: var(--ink-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--border);
+      color: var(--ink);
+    }
+
+    /* ── MAP ──────────────────────────────────── */
+    .map-wrapper {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      height: 400px;
+      margin-bottom: 1.5rem;
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    /* ── BREADCRUMB ───────────────────────────── */
+    .breadcrumb-bar {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+
+    .breadcrumb-bar a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .breadcrumb-bar a:hover { text-decoration: underline; }
+
+    .breadcrumb-sep { color: var(--border); }
+
+    /* ── SECTION TITLE ────────────────────────── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+
+    /* ── FADE-IN ──────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { animation: fadeUp 0.5s ease both; }
+    .fade-up-1 { animation-delay: 0.05s; }
+    .fade-up-2 { animation-delay: 0.12s; }
+    .fade-up-3 { animation-delay: 0.20s; }
+    .fade-up-4 { animation-delay: 0.28s; }
+  </style>
 </head>
+
 <%- include("../partials/navbar") %>
+
 <body>
 
-<!-- Navbar -->
-<!-- <nav class="navbar navbar-expand-lg bg-primary">
-  <div class="container">
-    <a href="/rentals" class="navbar-brand text-white">🏠 To-Let System</a>
+  <!-- Hero -->
+  <div class="hero-section fade-up">
+    <% if (rental.image && rental.image.url) { %>
+      <img src="<%= rental.image.url %>" class="hero-image" alt="<%= rental.name %>">
+    <% } else { %>
+      <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80" class="hero-image" alt="Property">
+    <% } %>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">🏠 For Rent</div>
+      <h1 class="hero-title"><%= rental.name %></h1>
+      <p class="hero-address">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.24 0 3 2.24 3 5c0 3.75 5 11 5 11s5-7.25 5-11c0-2.76-2.24-5-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+        <%= rental.address %>
+      </p>
+    </div>
   </div>
-</nav> -->
 
-<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar fade-up fade-up-1">
+    <a href="/rentals">Listings</a>
+    <span class="breadcrumb-sep">›</span>
+    <span><%= rental.name %></span>
+  </div>
 
-  <!-- Title -->
-  <h2 class="mb-3"><%= rental.name %></h2>
+  <!-- Main Body -->
+  <div class="page-body">
 
-  <!-- Image -->
-  <% if (rental.image && rental.image.url) { %>
-    <img src="<%= rental.image.url %>" class="hero-img mb-4">
-  <% } else { %>
-    <img src="https://via.placeholder.com/900x400?text=No+Image" class="hero-img mb-4">
-  <% } %>
-
-  <div class="row">
-
-    <!-- Left Section -->
-    <div class="col-lg-8">
-
-      <!-- Address -->
-      <p class="text-muted">📍 <%= rental.address %></p>
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
 
       <!-- Features -->
-      <div class="mb-3">
-        <span class="feature-box">🛏 <%= rental.beds || 0 %> Beds</span>
-        <span class="feature-box">🛁 <%= rental.baths || 0 %> Baths</span>
-        <span class="feature-box">🍽 <%= rental.dining || 0 %> Dining</span>
-        <span class="feature-box">🛋 <%= rental.drawing || 0 %> Drawing</span>
-        <span class="feature-box">🚗 <%= rental.porch || 0 %> Porch</span>
-        <span class="feature-box">📐 <%= rental.squareFeet || 0 %> sqft</span>
+      <div class="card-block fade-up fade-up-2">
+        <div class="card-label">Property Details</div>
+        <div class="features-grid">
+          <div class="feature-tile">
+            <span class="feature-icon">🛏</span>
+            <span class="feature-value"><%= rental.beds || 0 %></span>
+            <span class="feature-name">Bedrooms</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🛁</span>
+            <span class="feature-value"><%= rental.baths || 0 %></span>
+            <span class="feature-name">Bathrooms</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🍽</span>
+            <span class="feature-value"><%= rental.dining || 0 %></span>
+            <span class="feature-name">Dining</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🛋</span>
+            <span class="feature-value"><%= rental.drawing || 0 %></span>
+            <span class="feature-name">Drawing Room</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🚗</span>
+            <span class="feature-value"><%= rental.porch || 0 %></span>
+            <span class="feature-name">Porch</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">📐</span>
+            <span class="feature-value"><%= rental.squareFeet || 0 %></span>
+            <span class="feature-name">Sq. Feet</span>
+          </div>
+        </div>
       </div>
 
       <!-- Description -->
-      <div class="info-card mb-3">
-        <h5>Description</h5>
-        <p class="description"><%= rental.description || "No description provided." %></p>
+      <div class="card-block fade-up fade-up-3">
+        <div class="card-label">About this Property</div>
+        <p class="description-text"><%= rental.description || "No description provided." %></p>
       </div>
 
       <!-- Availability -->
-      <div class="info-card">
-        <h6>Available From:</h6>
-        <p>
-          <%= rental.availableFrom 
-              ? new Date(rental.availableFrom).toDateString() 
-              : "Not specified" %>
-        </p>
+      <div class="card-block fade-up fade-up-3" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div>
+          <p class="section-title" style="margin-bottom:2px;">Availability</p>
+          <p style="font-size:0.85rem; color:var(--ink-soft);">Move-in ready date</p>
+        </div>
+        <div class="availability-pill">
+          <span class="avail-dot"></span>
+          <%= rental.availableFrom
+              ? new Date(rental.availableFrom).toDateString()
+              : "Available Now" %>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="card-block fade-up fade-up-4" style="padding: 0; overflow:hidden;">
+        <div style="padding: 1.25rem 1.5rem 1rem;">
+          <div class="card-label">Location</div>
+        </div>
+        <div class="map-wrapper" style="margin-bottom:0; border-radius:0 0 var(--radius) var(--radius); border:none;">
+          <div id="map"></div>
+        </div>
       </div>
 
     </div>
 
-    <!-- Right Section -->
-    <div class="col-lg-4">
+    <!-- RIGHT COLUMN (Sidebar) -->
+    <div class="sidebar fade-up fade-up-2">
 
-      <div class="info-card">
+      <!-- Price Block -->
+      <div class="price-block">
+        <div class="price-label">Monthly Rent</div>
+        <div class="price-amount">
+          <span class="price-currency">৳</span>
+          <%= Number(rental.rentPrice).toLocaleString() %>
+        </div>
+        <div class="price-period">per month</div>
 
-        <p class="price">৳ <%= rental.rentPrice %></p>
+        <hr class="price-divider">
 
-        <hr>
+        <div class="contact-row">
+          <button class="btn-primary-accent">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/></svg>
+            Contact Owner
+          </button>
+          <a href="#map" class="btn-outline-soft">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.24 0 3 2.24 3 5c0 3.75 5 11 5 11s5-7.25 5-11c0-2.76-2.24-5-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+            View on Map
+          </a>
+        </div>
+      </div>
 
-        <!-- Actions -->
-        <a href="/rentals/<%= rental._id %>/edit" class="btn btn-warning w-100 mb-2">
-          ✏️ Edit
+      <!-- Admin Actions -->
+      <div class="actions-card">
+        <p style="font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Manage Listing</p>
+
+        <a href="/rentals/<%= rental._id %>/edit" class="btn-primary-accent" style="background: var(--ink);">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5z"/></svg>
+          Edit Listing
         </a>
 
+        <hr class="actions-divider">
+
         <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST">
-          <button class="btn btn-danger w-100 mb-2" onclick="return confirm('Delete this rental?')">
-            🗑 Delete
+          <button type="submit" class="btn-danger-soft" onclick="return confirm('Are you sure you want to delete this listing?')">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+            Delete Listing
           </button>
         </form>
 
-        <a href="/rentals" class="btn btn-secondary w-100">
-          ⬅ Back to Listings
+        <a href="/rentals" class="btn-back">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+          Back to Listings
         </a>
-
       </div>
 
     </div>
-
   </div>
 
-  <div id="map" style="width: 800px; height: 600px;"></div>
-
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
-  const rental = <%- JSON.stringify(rental) %>
-</script>
-<script src="/js/showPageMap.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const rental = <%- JSON.stringify(rental) %>;
+  </script>
+  <script src="/js/showPageMap.js"></script>
 
 </body>
 </html>

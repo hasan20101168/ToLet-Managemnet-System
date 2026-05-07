@@ -194,13 +194,68 @@ exports.renderAllRentals = async (req, res) => {
 // OWNER DASHBOARD
 exports.ownerDashboard = async (req, res) => {
   try {
-    const rentals = await Rental.find({
+
+    const { search, sort } = req.query;
+
+    let query = {
       owner: req.session.user._id
-    })
-      .sort({ createdAt: -1 })
+    };
+
+    // Search
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { address: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    // Sorting
+    let sortOption = { createdAt: -1 };
+
+    if (sort === "priceLow") {
+      sortOption = { rentPrice: 1 };
+    }
+
+    if (sort === "priceHigh") {
+      sortOption = { rentPrice: -1 };
+    }
+
+    if (sort === "latest") {
+      sortOption = { createdAt: -1 };
+    }
+
+    const rentals = await Rental.find(query)
+      .sort(sortOption)
       .lean();
 
-    res.render("dashboard/owner", { rentals });
+    // ================= ANALYTICS =================
+
+    const totalProperties = rentals.length;
+
+    const totalRentValue = rentals.reduce(
+      (sum, r) => sum + (r.rentPrice || 0),
+      0
+    );
+
+    const averageRent =
+      totalProperties > 0
+        ? Math.round(totalRentValue / totalProperties)
+        : 0;
+
+    const availableProperties = rentals.filter(
+      r => new Date(r.availableFrom) <= new Date()
+    ).length;
+
+    res.render("dashboard/owner", {
+      rentals,
+      analytics: {
+        totalProperties,
+        totalRentValue,
+        averageRent,
+        availableProperties
+      },
+      filters: req.query
+    });
 
   } catch (err) {
     console.error(err);
