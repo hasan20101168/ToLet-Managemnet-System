@@ -6,13 +6,24 @@ const methodOverride = require("method-override");
 const path = require("path");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const rentalRoutes = require("./routes/rentalRoutes");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
+const Message = require("./models/Message");
 
 const app = express();
+
+const server = http.createServer(app);
+
+const io = new Server(server);
+
+global.io = io;
 
 // ================= MIDDLEWARE =================
 app.use(express.urlencoded({ extended: true }));
@@ -53,10 +64,52 @@ mongoose.connect("mongodb://127.0.0.1:27017/toletDB")
 app.use("/", authRoutes);          // auth routes (login/register)
 app.use("/rentals", rentalRoutes); // rental routes
 app.use("/", adminRoutes);
+app.use("/chat", chatRoutes);
+app.use("/messages", messageRoutes);
 
 // Root redirect
 app.get("/", (req, res) => {
   res.redirect("/"); // landing page
+});
+
+// ================= SOCKET.IO =================
+
+io.on("connection", (socket) => {
+  // console.log("User connected");
+
+  // Join personal room
+  socket.on("join", (userId) => {
+    socket.join(userId);
+  });
+
+  // Send message
+  socket.on("sendMessage", async (data) => {
+    try {
+      const savedMessage = await Message.create({
+        rental: data.rentalId,
+        sender: data.senderId,
+        receiver: data.receiverId,
+        text: data.text,
+      });
+
+      const populated = await Message.findById(savedMessage._id)
+        .populate("sender", "name role")
+        .populate("receiver", "name role");
+
+      // send to receiver
+      io.to(data.receiverId).emit("receiveMessage", populated);
+
+      // send back to sender
+      io.to(data.senderId).emit("receiveMessage", populated);
+
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    // console.log("User disconnected");
+  });
 });
 
 // ================= ERROR =================
@@ -65,6 +118,6 @@ app.use((req, res) => {
 });
 
 // ================= SERVER =================
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
