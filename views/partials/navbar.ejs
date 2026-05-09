@@ -21,9 +21,9 @@
             <li class="nav-item">
               <a class="nav-link" href="/rentals/owner/dashboard">Dashboard</a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a class="nav-link" href="/rentals/new">Add Rental</a>
-            </li>
+            </li> -->
           <% } %>
 
           <% if (currentUser.role === "tenant") { %>
@@ -38,7 +38,7 @@
             </li>
           <% } %>
 
-          <% if (currentUser && currentUser.role === "owner") { %>
+          <!-- <% if (currentUser && currentUser.role === "owner") { %>
 
             <a href="/messages/owner/inbox" class="nav-link position-relative">
 
@@ -48,7 +48,7 @@
 
             </a>
 
-          <% } %>
+          <% } %> -->
 
           <!-- User Info -->
           <li class="nav-item">
