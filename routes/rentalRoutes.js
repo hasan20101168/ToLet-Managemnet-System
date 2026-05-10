@@ -21,6 +21,13 @@ router.delete("/api/:id", rentalController.deleteRental);
 // ================= DASHBOARD =================
 router.get("/owner/dashboard", isLoggedIn, isOwner, rentalController.ownerDashboard);
 
+router.get(
+  "/owner/properties",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerProperties
+);
+
 
 // ================= PUBLIC VIEW ROUTES =================
 

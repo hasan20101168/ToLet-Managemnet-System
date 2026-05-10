@@ -195,38 +195,11 @@ exports.renderAllRentals = async (req, res) => {
 exports.ownerDashboard = async (req, res) => {
   try {
 
-    const { search, sort } = req.query;
-
-    let query = {
+    const rentals = await Rental.find({
       owner: req.session.user._id
-    };
-
-    // Search
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { address: { $regex: search, $options: "i" } }
-      ];
-    }
-
-    // Sorting
-    let sortOption = { createdAt: -1 };
-
-    if (sort === "priceLow") {
-      sortOption = { rentPrice: 1 };
-    }
-
-    if (sort === "priceHigh") {
-      sortOption = { rentPrice: -1 };
-    }
-
-    if (sort === "latest") {
-      sortOption = { createdAt: -1 };
-    }
-
-    const rentals = await Rental.find(query)
-      .sort(sortOption)
-      .lean();
+    })
+    .sort({ createdAt: -1 })
+    .lean();
 
     // ================= ANALYTICS =================
 
@@ -248,18 +221,82 @@ exports.ownerDashboard = async (req, res) => {
 
     res.render("dashboard/owner", {
       rentals,
+
       analytics: {
         totalProperties,
         totalRentValue,
         averageRent,
         availableProperties
       },
-      filters: req.query
+
+      activePage: "dashboard"
     });
 
   } catch (err) {
     console.error(err);
-    res.send("Error loading dashboard");
+    res.status(500).send("Error loading dashboard");
+  }
+};
+
+
+// OWNER PROPERTIES PAGE
+exports.ownerProperties = async (req, res) => {
+  try {
+
+    const { search, sort } = req.query;
+
+    let query = {
+      owner: req.session.user._id
+    };
+
+    // ================= SEARCH =================
+
+    if (search) {
+      query.$or = [
+        {
+          name: {
+            $regex: search,
+            $options: "i"
+          }
+        },
+        {
+          address: {
+            $regex: search,
+            $options: "i"
+          }
+        }
+      ];
+    }
+
+    // ================= SORT =================
+
+    let sortOption = { createdAt: -1 };
+
+    if (sort === "priceLow") {
+      sortOption = { rentPrice: 1 };
+    }
+
+    if (sort === "priceHigh") {
+      sortOption = { rentPrice: -1 };
+    }
+
+    if (sort === "latest") {
+      sortOption = { createdAt: -1 };
+    }
+
+    const rentals = await Rental.find(query)
+      .sort(sortOption)
+      .lean();
+
+    res.render("dashboard/properties", {
+      rentals,
+      filters: req.query,
+      activePage: "properties"
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Properties loading failed");
   }
 };
 
