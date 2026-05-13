@@ -28,6 +28,10 @@ const rentalSchema = new mongoose.Schema({
     url: String,
     filename: String
   },
+  tenant: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
 
   // 🔥 OWNER LINK
   owner: {

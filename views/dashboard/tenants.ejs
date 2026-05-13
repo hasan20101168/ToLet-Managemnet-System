@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Tenant Requests | To-Let</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <link rel="stylesheet" href="/css/owner.css">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+  <%- include("../partials/sidebar") %>
+
+  <main class="dashboard-main">
+
+    <div class="page-header">
+      <div>
+        <h2>Tenant Requests</h2>
+        <p>
+          Manage incoming rental requests
+        </p>
+      </div>
+    </div>
+
+    <% if (requests.length === 0) { %>
+
+      <div class="dashboard-card p-5 text-center">
+
+        <i class="bi bi-inbox"
+        style="font-size:3rem;color:#9ca3af;"></i>
+
+        <h4 class="mt-3">
+          No Requests Yet
+        </h4>
+
+      </div>
+
+    <% } else { %>
+
+      <div class="requests-grid">
+
+        <% requests.forEach(request => { %>
+
+          <div class="dashboard-card request-card">
+
+            <div class="request-top">
+
+              <div>
+
+                <h5>
+                  <%= request.rental?.name %>
+                </h5>
+
+                <p class="request-address">
+                  <%= request.rental?.address %>
+                </p>
+
+              </div>
+
+              <span class="request-status <%= request.status %>">
+                <%= request.status %>
+              </span>
+
+            </div>
+
+            <div class="request-user">
+
+              <i class="bi bi-person-circle"></i>
+
+              <div>
+                <h6><%= request.tenant?.name %></h6>
+                <p><%= request.tenant?.email %></p>
+              </div>
+
+            </div>
+
+            <% if (request.message) { %>
+
+              <div class="request-message">
+                <%= request.message %>
+              </div>
+
+            <% } %>
+
+            <div class="request-actions">
+
+              <% if (request.status === "pending") { %>
+
+                <form
+                action="/rentals/requests/<%= request._id %>/approve"
+                method="POST">
+
+                  <button class="btn-approve">
+                    Approve
+                  </button>
+
+                </form>
+
+                <form
+                action="/rentals/requests/<%= request._id %>/reject"
+                method="POST">
+
+                  <button class="btn-reject">
+                    Reject
+                  </button>
+
+                </form>
+
+              <% } else { %>
+
+                <div class="request-completed">
+                  Request already <%= request.status %>
+                </div>
+
+              <% } %>
+
+            </div>
+
+          </div>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+
+  </main>
+
+</div>
+
+</body>
+</html>
