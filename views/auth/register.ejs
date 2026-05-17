@@ -1,48 +1,213 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Register</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/auth.css">
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ddc39d",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-container": "#57657b",
+                      "on-tertiary-container": "#a38c6a",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#545f73",
+                      "primary-fixed": "#d8e3fb",
+                      "surface-container-high": "#eae7e9",
+                      "surface-bright": "#fbf8fa",
+                      "on-primary-fixed": "#111c2d",
+                      "on-tertiary-fixed-variant": "#564427",
+                      "tertiary": "#1e1200",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#8590a6",
+                      "secondary-fixed": "#d5e3fd",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f5f3f4",
+                      "background": "#fbf8fa",
+                      "on-background": "#1b1b1d",
+                      "surface-dim": "#dcd9db",
+                      "surface": "#fbf8fa",
+                      "secondary": "#515f74",
+                      "primary": "#091426",
+                      "outline-variant": "#c5c6cd",
+                      "inverse-primary": "#bcc7de",
+                      "tertiary-container": "#35260c",
+                      "outline": "#75777d",
+                      "on-surface": "#1b1b1d",
+                      "inverse-surface": "#303032",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "inverse-on-surface": "#f3f0f2",
+                      "secondary-container": "#d5e3fd",
+                      "surface-container-highest": "#e4e2e3",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "primary-fixed-dim": "#bcc7de",
+                      "on-tertiary-fixed": "#271902",
+                      "on-primary-fixed-variant": "#3c475a",
+                      "surface-container": "#f0edef",
+                      "primary-container": "#1e293b",
+                      "surface-variant": "#e4e2e3",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#fadfb8",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#45474c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "container-margin": "32px",
+                      "table-gutter": "12px",
+                      "xs": "4px",
+                      "sm": "8px"
+              },
+              "fontSize": {
+                      "body-xs": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "h1": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
 </head>
-
-<body>
-
-<div class="container d-flex justify-content-center align-items-center vh-100">
-
-  <div class="card p-4 shadow auth-box">
-
-    <h3 class="text-center mb-3">Create Account</h3>
-
-    <form action="/register" method="POST">
-
-      <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
-
-      <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
-
-      <input type="password" name="password" class="form-control mb-2" placeholder="Password" required>
-
-      <select name="role" class="form-select mb-3" required>
-        <option value="">Select Role</option>
-        <option value="tenant">Tenant</option>
-        <option value="owner">Owner</option>
-      </select>
-
-      <button class="btn btn-success w-100">Register</button>
-
-    </form>
-
-    <div class="text-center mt-3">
-      <small>
-        Already have an account?
-        <a href="/login">Login</a>
-      </small>
-    </div>
-
-  </div>
-
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+<div class="flex justify-between items-center w-full h-20 px-container-margin max-w-[1440px] mx-auto">
+<div class="text-h2 font-h2 font-bold text-primary">To-Let</div>
+<!-- <nav class="hidden md:flex gap-lg items-center">
+<a class="text-secondary hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Solutions</a>
+<a class="text-secondary hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Features</a>
+<a class="text-secondary hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Pricing</a>
+<a class="text-secondary hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Resources</a>
+</nav> -->
+<div class="flex gap-md">
+<button class="text-secondary font-label-caps text-label-caps px-md py-sm hover:underline"><a href="/login">Login</a></button>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-lg py-sm rounded-lg hover:bg-primary-container transition-all active:scale-95"><a href="/admin/login">Admin Portal</a></button>
+</div>
+</div>
+</header>
+<!-- Main Registration Canvas -->
+<main class="flex-grow flex items-center justify-center py-xl px-container-margin">
+<div class="w-full max-w-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-xl flex flex-col gap-lg">
+<div class="flex flex-col gap-xs items-center text-center">
+<h1 class="font-h1 text-h1 text-primary">Create your account</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Standardizing modern property management.</p>
 </div>
 
-</body>
-</html>
+<!-- Registration Form -->
+
+<form action="/register" method="POST" class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-secondary">FULL NAME</label>
+<input type="text" name="name" class="w-full h-12 px-md border border-outline-variant bg-surface-container-lowest 
+focus:ring-2 focus:ring-primary focus:border-primary rounded-lg font-body-sm" placeholder="Full Name" required/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-secondary">EMAIL ADDRESS</label>
+<input type="email" name="email" class="w-full h-12 px-md border border-outline-variant bg-surface-container-lowest 
+focus:ring-2 focus:ring-primary focus:border-primary rounded-lg font-body-sm" placeholder="Email" required/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-secondary">PASSWORD</label>
+<input type="password" name="password" class="w-full h-12 px-md border border-outline-variant 
+bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary rounded-lg 
+font-body-sm" placeholder="Password" required/>
+</div>
+<!-- Role Selector -->
+<div class="flex flex-col gap-sm">
+  <!-- <label class="font-label-caps text-label-caps text-secondary text-center">
+    I AM A
+  </label> -->
+
+  <div class="relative">
+    <select
+      name="role"
+      required
+      class="w-full h-12 px-md border border-outline-variant bg-surface-container-lowest 
+             focus:ring-2 focus:ring-primary focus:border-primary rounded-lg 
+             font-body-sm appearance-none"
+    >
+      <option value="">Select Role</option>
+      <option value="tenant">Tenant</option>
+      <option value="owner">Owner</option>
+    </select>
+
+    <!-- dropdown icon -->
+    <!-- <span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
+      expand_more
+    </span> -->
+  </div>
+</div>
+<div class="pt-sm">
+<button class="w-full bg-primary text-on-primary font-label-caps text-label-caps h-14 rounded-lg hover:bg-primary-container shadow-md transition-all active:scale-95 flex items-center justify-center gap-sm" type="submit">
+                                CREATE ACCOUNT
+                                <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<div class="text-center pt-sm">
+<p class="font-body-xs text-body-xs text-on-surface-variant">
+                            Already have an account? 
+                            <a class="text-primary font-semibold hover:underline" href="/login">Sign in</a>
+</p>
+</div>
+</div>
+</div>
+<!-- Minimal Support Footer -->
+<!-- <div class="mt-lg text-center">
+<p class="font-body-xs text-body-xs text-on-surface-variant">Need help? <a class="text-secondary hover:text-primary underline" href="#">Contact Support</a></p>
+</div> -->
+</div>
+</main>
+<!-- Visual Anchor / Decorative Element (Maintained) -->
+<div class="hidden lg:block fixed bottom-0 left-0 w-1/3 h-1/2 opacity-5 pointer-events-none">
+<div class="w-full h-full bg-primary" style="mask-image: linear-gradient(to top right, black, transparent); -webkit-mask-image: linear-gradient(to top right, black, transparent);"></div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-container-margin py-xl max-w-[1440px] mx-auto gap-md">
+<div class="flex flex-col md:flex-row items-center gap-lg">
+<span class="font-h3 text-h3 font-bold text-primary">To-Let</span>
+<span class="font-body-xs text-body-xs text-on-surface-variant">© 2026 To-Let Operations. All rights reserved.</span>
+</div>
+<div class="flex flex-wrap justify-center gap-md">
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Security</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</body></html>
