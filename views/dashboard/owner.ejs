@@ -423,125 +423,77 @@
 
   <div class="maintenance-list">
 
-    <!-- Item -->
-    <div class="maintenance-item">
+    <% if (maintenanceRequests.length === 0) { %>
 
-      <div class="maintenance-icon danger">
+      <p style="padding:20px;">
+        No maintenance requests found.
+      </p>
 
-        <i class="bi bi-house-door"></i>
+    <% } %>
 
-      </div>
+    <% maintenanceRequests.forEach(req => { %>
 
-      <div class="maintenance-content">
+      <div class="maintenance-item">
 
-        <div class="maintenance-top">
+        <div class="maintenance-icon
+          <%= req.status === 'completed'
+            ? 'primary'
+            : req.status === 'in-progress'
+            ? 'warning'
+            : 'danger'
+          %>
+        ">
 
-          <div>
-            <h6>HVAC Leakage</h6>
-            <p>Unit 402, Oak Tower</p>
+          <i class="bi bi-tools"></i>
+
+        </div>
+
+        <div class="maintenance-content">
+
+          <div class="maintenance-top">
+
+            <div>
+
+              <h6>
+                <%= req.title %>
+              </h6>
+
+              <p>
+                <%= req.rental?.name || "Property" %>
+              </p>
+
+            </div>
+
+            <span class="maintenance-time">
+
+              <%= new Date(req.createdAt).toLocaleDateString() %>
+
+            </span>
+
           </div>
 
-          <span class="maintenance-time">
-            2h ago
-          </span>
+          <div class="maintenance-tags">
 
-        </div>
+            <span class="tag
+              <%= req.status === 'completed'
+                ? 'normal'
+                : req.status === 'in-progress'
+                ? 'high'
+                : 'urgent'
+              %>
+            ">
 
-        <div class="maintenance-tags">
+              <%= req.status %>
 
-          <span class="tag urgent">
-            URGENT
-          </span>
+            </span>
 
-          <span class="tag type">
-            PLUMBING
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Item -->
-    <div class="maintenance-item">
-
-      <div class="maintenance-icon warning">
-
-        <i class="bi bi-lightning-charge"></i>
-
-      </div>
-
-      <div class="maintenance-content">
-
-        <div class="maintenance-top">
-
-          <div>
-            <h6>Sparking Outlet</h6>
-            <p>Unit 115, Pine Gardens</p>
           </div>
 
-          <span class="maintenance-time">
-            5h ago
-          </span>
-
-        </div>
-
-        <div class="maintenance-tags">
-
-          <span class="tag high">
-            HIGH
-          </span>
-
-          <span class="tag type">
-            ELECTRICAL
-          </span>
-
         </div>
 
       </div>
 
-    </div>
-
-    <!-- Item -->
-    <div class="maintenance-item">
-
-      <div class="maintenance-icon primary">
-
-        <i class="bi bi-lock"></i>
-
-      </div>
-
-      <div class="maintenance-content">
-
-        <div class="maintenance-top">
-
-          <div>
-            <h6>Smart Lock Sync</h6>
-            <p>Lobby Entrance B</p>
-          </div>
-
-          <span class="maintenance-time">
-            Yesterday
-          </span>
-
-        </div>
-
-        <div class="maintenance-tags">
-
-          <span class="tag normal">
-            NORMAL
-          </span>
-
-          <span class="tag type">
-            IT
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
+    <% }) %>
 
   </div>
 

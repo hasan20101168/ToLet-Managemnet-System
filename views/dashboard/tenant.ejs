@@ -1,7 +1,3 @@
-<!-- <h2>Available Rentals</h2>
-
-<a href="/rentals">Browse All</a> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,17 +53,48 @@
           </p>
 
           <!-- DEMO PAYMENT -->
-          <form>
 
-            <button
-              type="button"
-              class="btn btn-success mb-3"
-              onclick="alert('Demo payment successful!')"
-            >
-              Pay Rent
-            </button>
+          <div class="mb-3">
 
-          </form>
+            <p>
+              <strong>
+                Payment Status:
+              </strong>
+
+              <% if (rental.currentMonthPaid) { %>
+
+                <span class="badge bg-success">
+                  Paid for <%= currentMonth %>/<%= currentYear %>
+                </span>
+
+              <% } else { %>
+
+                <span class="badge bg-danger">
+                  Pending for <%= currentMonth %>/<%= currentYear %>
+                </span>
+
+              <% } %>
+            </p>
+
+            <% if (!rental.currentMonthPaid) { %>
+
+              <form
+                action="/rentals/tenant/pay/<%= rental._id %>"
+                method="POST"
+              >
+
+                <button
+                  type="submit"
+                  class="btn btn-success mb-3"
+                >
+                  Pay Rent
+                </button>
+
+              </form>
+
+            <% } %>
+
+          </div>
 
           <!-- MAINTENANCE -->
           <form

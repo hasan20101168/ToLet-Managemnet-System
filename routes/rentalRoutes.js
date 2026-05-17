@@ -133,6 +133,21 @@ router.post(
   rentalController.sendMaintenanceRequest
 );
 
+// PAY RENT
+router.post(
+  "/tenant/pay/:id",
+  isLoggedIn,
+  rentalController.payRent
+);
+
+// OWNER FINANCE PAGE
+router.get(
+  "/owner/finance",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerFinancePage
+);
+
 // ================= SINGLE VIEW =================
 router.get("/:id", rentalController.renderSingleRental);
 

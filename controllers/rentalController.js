@@ -6,6 +6,7 @@ const geocoder = mbxGeocoding({accessToken: mapBoxToken});
 const mongoose = require("mongoose");
 const RentalRequest = require("../models/RentalRequest");
 const MaintenanceRequest = require("../models/MaintenanceRequest");
+const Payment = require("../models/Payment");
 
 
 // ================= HELPER =================
@@ -167,23 +168,27 @@ exports.renderAllRentals = async (req, res) => {
       query.availableFrom = { $gte: new Date(availableFrom) };
     }
 
-    const limit = 8;
-    const skip = (page - 1) * limit;
+    const limit = 6;                        // max 6 cards per page
+    const currentPage = Math.max(1, Number(page));
+    const skip = (currentPage - 1) * limit;
 
-    const total = await Rental.countDocuments(query);
+    const totalRentals = await Rental.countDocuments(query);
+    const totalPages   = Math.ceil(totalRentals / limit) || 1;
+    const safePage     = Math.min(currentPage, totalPages);
 
     const rentals = await Rental.find(query)
       .populate("owner", "name")
-      .skip(skip)
-      .limit(limit)
       .sort({ createdAt: -1 })
+      .skip((safePage - 1) * limit)
+      .limit(limit)
       .lean();
 
     res.render("rentPost/index", {
       rentals,
       filters: req.query,
-      currentPage: Number(page),
-      totalPages: Math.ceil(total / limit),
+      currentPage: safePage,
+      totalPages,
+      totalRentals,
     });
 
   } catch (err) {
@@ -221,8 +226,20 @@ exports.ownerDashboard = async (req, res) => {
       r => new Date(r.availableFrom) <= new Date()
     ).length;
 
+    // ================= MAINTENANCE =================
+
+    const maintenanceRequests = await MaintenanceRequest.find({
+      owner: req.session.user._id
+    })
+    .populate("rental", "name")
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .lean();
+
     res.render("dashboard/owner", {
       rentals,
+
+      maintenanceRequests,
 
       analytics: {
         totalProperties,
@@ -299,6 +316,48 @@ exports.ownerProperties = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Properties loading failed");
+  }
+};
+
+// OWNER FINANCE PAGE
+exports.ownerFinancePage = async (req, res) => {
+  try {
+
+    const payments = await Payment.find({
+      owner: req.session.user._id
+    })
+    .populate("tenant", "name email")
+    .populate("rental", "name address rentPrice")
+    .sort({ createdAt: -1 })
+    .lean();
+
+    // totals
+    const totalRevenue = payments.reduce(
+      (sum, p) => sum + p.amount,
+      0
+    );
+
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
+    const monthlyRevenue = payments
+      .filter(
+        p =>
+          p.month === currentMonth &&
+          p.year === currentYear
+      )
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    res.render("dashboard/finance", {
+      payments,
+      totalRevenue,
+      monthlyRevenue,
+      activePage: "finance"
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.send("Finance page failed");
   }
 };
 
@@ -578,9 +637,32 @@ exports.tenantDashboard = async (req, res) => {
     .sort({ createdAt: -1 })
     .lean();
 
+    const payments = await Payment.find({
+      tenant: req.session.user._id
+    }).lean();
+
+    const now = new Date();
+
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    // attach payment info
+    rentals.forEach(rental => {
+
+      const paid = payments.find(p =>
+        p.rental.toString() === rental._id.toString() &&
+        p.month === currentMonth &&
+        p.year === currentYear
+      );
+
+      rental.currentMonthPaid = !!paid;
+    });
+
     res.render("dashboard/tenant", {
       rentals,
-      maintenanceRequests
+      maintenanceRequests,
+      currentMonth,
+      currentYear
     });
 
   } catch (err) {
@@ -612,5 +694,55 @@ exports.sendMaintenanceRequest = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.send("Maintenance request failed");
+  }
+};
+
+// PAY RENT
+exports.payRent = async (req, res) => {
+  try {
+
+    const rental = await Rental.findById(req.params.id);
+
+    if (!rental) {
+      return res.send("Rental not found");
+    }
+
+    const now = new Date();
+
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    // only allow from day 1
+    if (now.getDate() < 1) {
+      return res.send("Payment is not available yet");
+    }
+
+    // already paid?
+    const existingPayment = await Payment.findOne({
+      rental: rental._id,
+      tenant: req.session.user._id,
+      month: currentMonth,
+      year: currentYear
+    });
+
+    if (existingPayment) {
+      return res.redirect("/rentals/tenant/dashboard");
+    }
+
+    await Payment.create({
+      tenant: req.session.user._id,
+      owner: rental.owner,
+      rental: rental._id,
+      amount: rental.rentPrice,
+      month: currentMonth,
+      year: currentYear,
+      status: "paid"
+    });
+
+    res.redirect("/rentals/tenant/dashboard");
+
+  } catch (err) {
+    console.error(err);
+    res.send("Payment failed");
   }
 };
