@@ -56,6 +56,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // ================= DATABASE =================
+// const dbUrl = process.env.DB_URL;
+// "mongodb://127.0.0.1:27017/toletDB"
 mongoose.connect("mongodb://127.0.0.1:27017/toletDB")
 .then(() => console.log("MongoDB connected"))
 .catch(err => console.log("DB Error:", err));
