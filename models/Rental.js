@@ -2,6 +2,17 @@ const mongoose = require("mongoose");
 
 const rentalSchema = new mongoose.Schema({
   name: String,
+  geometry: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
   address: String,
   rentPrice: Number,
   beds: Number,
@@ -17,6 +28,10 @@ const rentalSchema = new mongoose.Schema({
     url: String,
     filename: String
   },
+  tenant: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
 
   // 🔥 OWNER LINK
   owner: {

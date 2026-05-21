@@ -2,140 +2,263 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title><%= rental.name %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= rental.name %> — To-Let</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
+  <!-- Mapbox -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.23.1/mapbox-gl.js"></script>
+
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/showPage.css">
 
-  <!-- <style>
-    .hero-img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    .info-card {
-      border-radius: 12px;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    }
-
-    .price {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #0d6efd;
-    }
-
-    .feature-box {
-      background: #f8f9fa;
-      padding: 10px 15px;
-      border-radius: 10px;
-      margin: 5px;
-      display: inline-block;
-    }
-
-    .description {
-      line-height: 1.6;
-    }
-  </style> -->
 </head>
+
 <%- include("../partials/navbar") %>
+
 <body>
 
-<!-- Navbar -->
-<!-- <nav class="navbar navbar-expand-lg bg-primary">
-  <div class="container">
-    <a href="/rentals" class="navbar-brand text-white">🏠 To-Let System</a>
+  <!-- Hero -->
+  <div class="hero-section fade-up">
+    <% if (rental.image && rental.image.url) { %>
+      <img src="<%= rental.image.url %>" class="hero-image" alt="<%= rental.name %>">
+    <% } else { %>
+      <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80" class="hero-image" alt="Property">
+    <% } %>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">🏠 For Rent</div>
+      <h1 class="hero-title"><%= rental.name %></h1>
+      <p class="hero-address">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.24 0 3 2.24 3 5c0 3.75 5 11 5 11s5-7.25 5-11c0-2.76-2.24-5-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+        <%= rental.address %>
+      </p>
+    </div>
   </div>
-</nav> -->
 
-<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb-bar fade-up fade-up-1">
+    <a href="/rentals">Listings</a>
+    <span class="breadcrumb-sep">›</span>
+    <span><%= rental.name %></span>
+  </div>
 
-  <!-- Title -->
-  <h2 class="mb-3"><%= rental.name %></h2>
+  <!-- Main Body -->
+  <div class="page-body">
 
-  <!-- Image -->
-  <% if (rental.image && rental.image.url) { %>
-    <img src="<%= rental.image.url %>" class="hero-img mb-4">
-  <% } else { %>
-    <img src="https://via.placeholder.com/900x400?text=No+Image" class="hero-img mb-4">
-  <% } %>
-
-  <div class="row">
-
-    <!-- Left Section -->
-    <div class="col-lg-8">
-
-      <!-- Address -->
-      <p class="text-muted">📍 <%= rental.address %></p>
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
 
       <!-- Features -->
-      <div class="mb-3">
-        <span class="feature-box">🛏 <%= rental.beds || 0 %> Beds</span>
-        <span class="feature-box">🛁 <%= rental.baths || 0 %> Baths</span>
-        <span class="feature-box">🍽 <%= rental.dining || 0 %> Dining</span>
-        <span class="feature-box">🛋 <%= rental.drawing || 0 %> Drawing</span>
-        <span class="feature-box">🚗 <%= rental.porch || 0 %> Porch</span>
-        <span class="feature-box">📐 <%= rental.squareFeet || 0 %> sqft</span>
+      <div class="card-block fade-up fade-up-2">
+        <div class="card-label">Property Details</div>
+        <div class="features-grid">
+          <div class="feature-tile">
+            <span class="feature-icon">🛏</span>
+            <span class="feature-value"><%= rental.beds || 0 %></span>
+            <span class="feature-name">Bedrooms</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🛁</span>
+            <span class="feature-value"><%= rental.baths || 0 %></span>
+            <span class="feature-name">Bathrooms</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🍽</span>
+            <span class="feature-value"><%= rental.dining || 0 %></span>
+            <span class="feature-name">Dining</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🛋</span>
+            <span class="feature-value"><%= rental.drawing || 0 %></span>
+            <span class="feature-name">Drawing Room</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">🚗</span>
+            <span class="feature-value"><%= rental.porch || 0 %></span>
+            <span class="feature-name">Porch</span>
+          </div>
+          <div class="feature-tile">
+            <span class="feature-icon">📐</span>
+            <span class="feature-value"><%= rental.squareFeet || 0 %></span>
+            <span class="feature-name">Sq. Feet</span>
+          </div>
+        </div>
       </div>
 
       <!-- Description -->
-      <div class="info-card mb-3">
-        <h5>Description</h5>
-        <p class="description"><%= rental.description || "No description provided." %></p>
+      <div class="card-block fade-up fade-up-3">
+        <div class="card-label">About this Property</div>
+        <p class="description-text"><%= rental.description || "No description provided." %></p>
       </div>
 
       <!-- Availability -->
-      <div class="info-card">
-        <h6>Available From:</h6>
-        <p>
-          <%= rental.availableFrom 
-              ? new Date(rental.availableFrom).toDateString() 
-              : "Not specified" %>
-        </p>
+      <div class="card-block fade-up fade-up-3" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div>
+          <p class="section-title" style="margin-bottom:2px;">Availability</p>
+          <p style="font-size:0.85rem; color:var(--ink-soft);">Move-in ready date</p>
+        </div>
+        <div class="availability-pill">
+          <span class="avail-dot"></span>
+          <%= rental.availableFrom
+              ? new Date(rental.availableFrom).toDateString()
+              : "Available Now" %>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="card-block fade-up fade-up-4" style="padding: 0; overflow:hidden;">
+        <div style="padding: 1.25rem 1.5rem 1rem;">
+          <div class="card-label">Location</div>
+        </div>
+        <div class="map-wrapper" style="margin-bottom:0; border-radius:0 0 var(--radius) var(--radius); border:none;">
+          <div id="map"></div>
+        </div>
       </div>
 
     </div>
 
-    <!-- Right Section -->
-    <div class="col-lg-4">
+    <!-- RIGHT COLUMN (Sidebar) -->
+    <div class="sidebar fade-up fade-up-2">
 
-      <div class="info-card">
+      <!-- Price Block -->
+      <div class="price-block">
+        <div class="price-label">Monthly Rent</div>
+        <div class="price-amount">
+          <span class="price-currency">৳</span>
+          <%= Number(rental.rentPrice).toLocaleString() %>
+        </div>
+        <div class="price-period">per month</div>
 
-        <p class="price">৳ <%= rental.rentPrice %></p>
+        <hr class="price-divider">
 
-        <hr>
+        <div class="contact-row">
+          <% if(currentUser && currentUser.role === "tenant") { %>
+          <button class="btn-primary-accent">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/></svg>
+            Contact Owner
+          </button>
+          <% } %>
 
-        <!-- Actions -->
-        <a href="/rentals/<%= rental._id %>/edit" class="btn btn-warning w-100 mb-2">
-          ✏️ Edit
+          <% if(currentUser && currentUser.role === "tenant") { %>
+
+            <a
+              href="/messages/chat/<%= rental._id %>/<%= rental.owner._id %>"
+              class="btn btn-primary"
+            >
+              Chat With Owner
+            </a>
+
+          <% } %>
+
+          <a href="#map" class="btn-outline-soft">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.24 0 3 2.24 3 5c0 3.75 5 11 5 11s5-7.25 5-11c0-2.76-2.24-5-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+            View on Map
+          </a>
+         
+          <% if(currentUser && currentUser.role === "tenant") { %>
+
+  <% if(requestSent) { %>
+
+    <div
+      style="
+        background:#d1fae5;
+        color:#065f46;
+        padding:14px;
+        border-radius:12px;
+        font-weight:600;
+        text-align:center;
+      "
+    >
+      Request sent successfully
+    </div>
+
+  <% } else { %>
+
+    <form
+      action="/rentals/requests/send/<%= rental._id %>"
+      method="POST"
+      class="request-form"
+    >
+
+      <textarea
+        name="message"
+        class="request-textarea"
+        placeholder="Write a short message to the owner..."
+        required
+      ></textarea>
+
+      <button type="submit" class="btn-request">
+
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M15.854.146a.5.5 0 0 0-.53-.11l-14 5a.5.5 0 0 0 .03.948l5.519 1.84 1.84 5.519a.5.5 0 0 0 .948.03l5-14a.5.5 0 0 0-.11-.53z"/>
+        </svg>
+
+        Send Rental Request
+
+      </button>
+
+    </form>
+
+  <% } %>
+
+<% } %>
+
+        </div>
+      </div>
+
+      <!-- Admin Actions -->
+       <% if (
+          currentUser &&
+          (
+            currentUser.role === "admin" ||
+            (
+              currentUser.role === "owner" &&
+              rental.owner &&
+              rental.owner._id.toString() === currentUser._id.toString()
+            )
+          )
+        ) { %>
+      <div class="actions-card">
+        <p style="font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Manage Listing</p>
+
+        <a href="/rentals/<%= rental._id %>/edit" class="btn-primary-accent" style="background: var(--ink);">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5z"/></svg>
+          Edit Listing
         </a>
 
+        <hr class="actions-divider">
+
         <form action="/rentals/<%= rental._id %>?_method=DELETE" method="POST">
-          <button class="btn btn-danger w-100 mb-2" onclick="return confirm('Delete this rental?')">
-            🗑 Delete
+          <button type="submit" class="btn-danger-soft" onclick="return confirm('Are you sure you want to delete this listing?')">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+            Delete Listing
           </button>
         </form>
 
-        <a href="/rentals" class="btn btn-secondary w-100">
-          ⬅ Back to Listings
+        <a href="/rentals" class="btn-back">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+          Back to Listings
         </a>
-
       </div>
+      <% } %>
 
     </div>
-
   </div>
 
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const rental = <%- JSON.stringify(rental) %>;
+  </script>
+  <script src="/js/showPageMap.js"></script>
 
 </body>
 </html>

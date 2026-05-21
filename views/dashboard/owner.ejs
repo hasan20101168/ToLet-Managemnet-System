@@ -2,87 +2,578 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Owner Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Owner Dashboard | To-Let </title>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="/css/owner.css">
 </head>
-<%- include("../partials/navbar") %>
-<body class="bg-light">
 
-<div class="container mt-5">
+<body>
 
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>🏠 My Rentals</h2>
-    <a href="/rentals/new" class="btn btn-primary">+ Add New</a>
-  </div>
+<div class="dashboard-layout">
 
-  <!-- Empty State -->
-  <% if (rentals.length === 0) { %>
-    <div class="alert alert-info">
-      No rentals found. Start by adding your first property.
+  <%- include("../partials/sidebar") %>
+
+  <!-- ================= MAIN ================= -->
+  <main class="dashboard-main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+
+        <input
+          type="text"
+          placeholder="Search properties, tenants or invoices..."
+        >
+      </div>
+
+      <!-- <div class="topbar-actions">
+
+        <button class="btn-filter">
+          <i class="bi bi-calendar3"></i>
+          Last 30 Days
+        </button>
+
+        <button class="btn-export">
+          <i class="bi bi-download"></i>
+          Export Report
+        </button>
+
+      </div> -->
+
     </div>
-  <% } %>
 
-  <!-- Rentals List -->
-  <div class="row g-4">
+    <!-- ================= PAGE HEADER ================= -->
+    <div class="page-header">
 
-    <% rentals.forEach(r => { %>
-      <div class="col-md-4">
-        <div class="card shadow-sm h-100">
+      <div>
+        <h2>Executive Overview</h2>
+        <p>
+          Real-time performance metrics for your rental portfolio.
+        </p>
+      </div>
 
-          <!-- Image -->
-          <% if (r.image && r.image.url) { %>
-            <img src="<%= r.image.url %>" class="card-img-top" style="height:200px; object-fit:cover;">
-          <% } else { %>
-            <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top">
-          <% } %>
+      <div class="topbar-actions">
 
-          <div class="card-body d-flex flex-column">
+        <button class="btn-filter">
+          <i class="bi bi-calendar3"></i>
+          Last 30 Days
+        </button>
 
-            <h5 class="card-title"><%= r.name %></h5>
+        <button class="btn-export">
+          <i class="bi bi-download"></i>
+          Export Report
+        </button>
 
-            <p class="text-muted small mb-2">
-              📍 <%= r.address %>
-            </p>
+      </div>
 
-            <p class="fw-bold text-primary mb-3">
-              ৳ <%= r.rentPrice %>
-            </p>
+    </div>
 
-            <!-- Actions -->
-            <div class="mt-auto d-flex justify-content-between">
+    <!-- ================= STATS ================= -->
+    <section class="stats-grid">
 
-              <a href="/rentals/<%= r._id %>" class="btn btn-sm btn-outline-primary">
-                View
-              </a>
+      <!-- CARD -->
+      <div class="analytics-card">
 
-              <a href="/rentals/<%= r._id %>/edit" class="btn btn-sm btn-warning">
-                Edit
-              </a>
+        <div class="analytics-top">
+          <p>Total Revenue</p>
 
-              <!-- 🔥 DELETE BUTTON -->
-              <form 
-                action="/rentals/<%= r._id %>?_method=DELETE" 
-                method="POST"
-                onsubmit="return confirm('Are you sure you want to delete this rental?');"
-              >
-                <button class="btn btn-sm btn-danger">
-                  Delete
-                </button>
-              </form>
+          <div class="analytics-icon revenue">
+            <i class="bi bi-cash-stack"></i>
+          </div>
+        </div>
+
+        <h3>
+          ৳<%= analytics.totalRentValue.toLocaleString() %>
+        </h3>
+
+        <span class="analytics-badge positive">
+          +8.2% vs last month
+        </span>
+
+      </div>
+
+      <!-- CARD -->
+      <div class="analytics-card">
+
+        <div class="analytics-top">
+          <p>Occupancy Rate</p>
+
+          <div class="analytics-icon occupancy">
+            <i class="bi bi-pie-chart"></i>
+          </div>
+        </div>
+
+        <h3>94.2%</h3>
+
+        <span class="analytics-muted">
+          <%= analytics.availableProperties %> units available
+        </span>
+
+      </div>
+
+      <!-- CARD -->
+      <div class="analytics-card">
+
+        <div class="analytics-top">
+          <p>Active Listings</p>
+
+          <div class="analytics-icon listings">
+            <i class="bi bi-buildings"></i>
+          </div>
+        </div>
+
+        <h3>
+          <%= analytics.totalProperties %>
+        </h3>
+
+        <span class="analytics-muted">
+          Updated in real time
+        </span>
+
+      </div>
+
+      <!-- CARD -->
+      <div class="analytics-card">
+
+        <div class="analytics-top">
+          <p>Average Rent</p>
+
+          <div class="analytics-icon avg">
+            <i class="bi bi-bar-chart-fill"></i>
+          </div>
+        </div>
+
+        <h3>
+          ৳<%= analytics.averageRent.toLocaleString() %>
+        </h3>
+
+        <span class="analytics-muted">
+          Market performance
+        </span>
+
+      </div>
+
+    </section>
+
+    <!-- ================= GRID ================= -->
+    <div class="dashboard-grid">
+
+      <!-- ================= LEFT ================= -->
+      <div class="dashboard-left">
+
+        <!-- CHART -->
+        <div class="dashboard-card chart-card">
+
+          <div class="card-header-custom">
+
+            <div>
+              <h5>Revenue Trends</h5>
+              <p>Monthly rental income overview</p>
+            </div>
+
+            <div class="legend-group">
+
+              <span class="legend-item">
+                <span class="dot dark"></span>
+                Income
+              </span>
+
+              <span class="legend-item">
+                <span class="dot light"></span>
+                Expenses
+              </span>
 
             </div>
 
           </div>
+
+          <!-- Fake graph -->
+          <div class="chart-placeholder">
+
+            <div class="graph-lines"></div>
+
+            <div class="graph-months">
+              <span>JAN</span>
+              <span>FEB</span>
+              <span>MAR</span>
+              <span>APR</span>
+              <span>MAY</span>
+              <span>JUN</span>
+            </div>
+
+          </div>
+
         </div>
+
+                <!-- UPCOMING LEASE EXPIRATIONS -->
+<div class="dashboard-card lease-card">
+
+  <div class="lease-card-header">
+    <h5>Upcoming lease expirations</h5>
+    <span class="lease-count-badge">3 expiring soon</span>
+  </div>
+
+  <table class="lease-table">
+    <thead>
+      <tr>
+        <th>Tenant</th>
+        <th>Unit</th>
+        <th>Expiry</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tenant-name">Sarah Jenkins</td>
+        <td class="unit-name">Skyline Penthouse 2</td>
+        <td><span class="expiry-dot dot-urgent"></span> Oct 12, 2023</td>
+        <td><button class="action-btn btn-notice">Send notice</button></td>
+      </tr>
+      <tr>
+        <td class="tenant-name">Marcus Thorne</td>
+        <td class="unit-name">Crestview Studio 14</td>
+        <td><span class="expiry-dot dot-soon"></span> Oct 28, 2023</td>
+        <td><button class="action-btn btn-renew">Renew</button></td>
+      </tr>
+      <tr>
+        <td class="tenant-name">Evelyn Rodriguez</td>
+        <td class="unit-name">Oak Tower 202</td>
+        <td><span class="expiry-dot dot-soon"></span> Nov 04, 2023</td>
+        <td><button class="action-btn btn-notice">Send notice</button></td>
+      </tr>
+      <tr>
+        <td class="tenant-name">Daniel Park</td>
+        <td class="unit-name">Harborview Loft 5B</td>
+        <td><span class="expiry-dot dot-ok"></span> Nov 18, 2023</td>
+        <td><button class="action-btn btn-review">Review</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+        <!-- PROPERTY LIST -->
+        <!-- <div class="dashboard-card properties-card">
+
+          <div class="card-header-custom">
+
+            <div>
+              <h5>My Properties</h5>
+              <p>
+                Manage and monitor all property listings
+              </p>
+            </div>
+
+          </div>
+
+          <% if (rentals.length === 0) { %>
+
+            <div class="empty-state">
+
+              <i class="bi bi-house-add"></i>
+
+              <h4>No properties found</h4>
+
+              <p>
+                Start by adding your first rental property.
+              </p>
+
+              <a href="/rentals/new" class="btn-add-property">
+                Add First Property
+              </a>
+
+            </div>
+
+          <% } else { %>
+
+            <div class="properties-grid">
+
+              <% rentals.forEach(r => { %>
+
+                <div class="property-card">
+
+                  <div class="property-image-wrap">
+
+                    <% if (r.image && r.image.url) { %>
+
+                      <img
+                        src="<%= r.image.url %>"
+                        class="property-image"
+                        alt="<%= r.name %>"
+                      >
+
+                    <% } else { %>
+
+                      <div class="property-placeholder">
+                        <i class="bi bi-image"></i>
+                      </div>
+
+                    <% } %>
+
+                    <span class="property-price">
+                      ৳<%= Number(r.rentPrice).toLocaleString() %>
+                    </span>
+
+                  </div>
+
+                  <div class="property-content">
+
+                    <h5><%= r.name %></h5>
+
+                    <p class="property-location">
+                      <i class="bi bi-geo-alt"></i>
+                      <%= r.address %>
+                    </p>
+
+                    <div class="property-meta">
+
+                      <span>
+                        <i class="bi bi-door-closed"></i>
+                        <%= r.beds || 0 %> Beds
+                      </span>
+
+                      <span>
+                        <i class="bi bi-droplet"></i>
+                        <%= r.baths || 0 %> Baths
+                      </span>
+
+                    </div>
+
+                    <div class="property-actions">
+
+                      <a
+                        href="/rentals/<%= r._id %>"
+                        class="btn-property view"
+                      >
+                        View
+                      </a>
+
+                      <a
+                        href="/rentals/<%= r._id %>/edit"
+                        class="btn-property edit"
+                      >
+                        Edit
+                      </a>
+
+                      <form
+                        action="/rentals/<%= r._id %>?_method=DELETE"
+                        method="POST"
+                        onsubmit="return confirm('Delete this rental?')"
+                      >
+
+                        <button
+                          type="submit"
+                          class="btn-property delete"
+                        >
+                          Delete
+                        </button>
+
+                      </form>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              <% }) %>
+
+            </div>
+
+          <% } %>
+
+        </div> -->
+
       </div>
+
+      <!-- ================= RIGHT ================= -->
+      <div class="dashboard-right">
+
+        <!-- QUICK ACTIONS -->
+        <div class="dashboard-card maintenance-card">
+
+  <div class="card-header-custom maintenance-header">
+
+    <h5>Priority Maintenance</h5>
+
+    <a href="#" class="view-all-link">
+      View All
+    </a>
+
+  </div>
+
+  <div class="maintenance-list">
+
+    <% if (maintenanceRequests.length === 0) { %>
+
+      <p style="padding:20px;">
+        No maintenance requests found.
+      </p>
+
+    <% } %>
+
+    <% maintenanceRequests.forEach(req => { %>
+
+      <div class="maintenance-item">
+
+        <div class="maintenance-icon
+          <%= req.status === 'completed'
+            ? 'primary'
+            : req.status === 'in-progress'
+            ? 'warning'
+            : 'danger'
+          %>
+        ">
+
+          <i class="bi bi-tools"></i>
+
+        </div>
+
+        <div class="maintenance-content">
+
+          <div class="maintenance-top">
+
+            <div>
+
+              <h6>
+                <%= req.title %>
+              </h6>
+
+              <p>
+                <%= req.rental?.name || "Property" %>
+              </p>
+
+            </div>
+
+            <span class="maintenance-time">
+
+              <%= new Date(req.createdAt).toLocaleDateString() %>
+
+            </span>
+
+          </div>
+
+          <div class="maintenance-tags">
+
+            <span class="tag
+              <%= req.status === 'completed'
+                ? 'normal'
+                : req.status === 'in-progress'
+                ? 'high'
+                : 'urgent'
+              %>
+            ">
+
+              <%= req.status %>
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
     <% }) %>
 
   </div>
 
 </div>
+
+        <!-- PORTFOLIO -->
+         <div class="portfolio-health-row">
+        <div class="dashboard-card portfolio-card">
+
+          <% if (rentals.length > 0 && rentals[0].image) { %>
+
+            <img
+              src="<%= rentals[0].image.url %>"
+              class="portfolio-image"
+            >
+
+          <% } %>
+
+          <div class="portfolio-overlay">
+
+            <span class="portfolio-badge">
+              98% Occupancy
+            </span>
+
+            <h4>
+              <%= rentals.length > 0 ? rentals[0].name : "Portfolio" %>
+            </h4>
+
+            <p>Premium Property Collection</p>
+
+          </div>
+
+        </div>
+
+        <!-- HEALTH -->
+        <div class="dashboard-card">
+
+          <div class="card-header-custom">
+
+            <div>
+              <h5>Portfolio Health</h5>
+            </div>
+
+            <i class="bi bi-stars health-icon"></i>
+
+          </div>
+
+          <p class="health-text">
+
+            Your portfolio is performing strongly with above-average
+            rental demand and stable occupancy rates.
+
+          </p>
+
+          <div class="health-rating">
+
+            <span>Overall Rating</span>
+
+            <div class="stars">
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-half"></i>
+            </div>
+
+          </div>
+
+        </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

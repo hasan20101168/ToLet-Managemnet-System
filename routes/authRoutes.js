@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
   res.render("auth/landing");
 });
 
-// Prevent logged-in users from accessing auth pages
+// Auth pages (block if already logged in)
 router.get("/register", redirectIfLoggedIn, (req, res) => {
   res.render("auth/register");
 });
@@ -38,7 +38,7 @@ router.post("/login", auth.login);
 // Admin login
 router.post("/admin/login", auth.adminLogin);
 
-// 🔥 FIXED: Logout should be POST
+// Logout (POST - correct)
 router.post("/logout", isLoggedIn, auth.logout);
 
 

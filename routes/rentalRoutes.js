@@ -19,7 +19,52 @@ router.delete("/api/:id", rentalController.deleteRental);
 
 
 // ================= DASHBOARD =================
-router.get("/owner/dashboard", isLoggedIn, isOwner, rentalController.ownerDashboard);
+router.get(
+  "/owner/dashboard",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerDashboard
+);
+
+router.get(
+  "/owner/properties",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerProperties
+);
+
+// ================= TENANT REQUESTS =================
+
+// OWNER REQUEST PAGE
+router.get(
+  "/owner/tenants",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerTenantsPage
+);
+
+// SEND RENTAL REQUEST
+router.post(
+  "/requests/send/:id",
+  isLoggedIn,
+  rentalController.sendRentalRequest
+);
+
+// APPROVE REQUEST
+router.post(
+  "/requests/:id/approve",
+  isLoggedIn,
+  isOwner,
+  rentalController.approveRentalRequest
+);
+
+// REJECT REQUEST
+router.post(
+  "/requests/:id/reject",
+  isLoggedIn,
+  isOwner,
+  rentalController.rejectRentalRequest
+);
 
 
 // ================= PUBLIC VIEW ROUTES =================
@@ -30,10 +75,13 @@ router.get("/", rentalController.renderAllRentals);
 
 // ================= OWNER PROTECTED ROUTES =================
 
-// 🔥 IMPORTANT: static routes BEFORE dynamic
-
 // Create
-router.get("/new", isLoggedIn, isOwner, rentalController.renderCreateForm);
+router.get(
+  "/new",
+  isLoggedIn,
+  isOwner,
+  rentalController.renderCreateForm
+);
 
 router.post(
   "/",
@@ -71,9 +119,36 @@ router.delete(
   rentalController.deleteRentalView
 );
 
+// TENANT DASHBOARD
+router.get(
+  "/tenant/dashboard",
+  isLoggedIn,
+  rentalController.tenantDashboard
+);
 
-// ================= SINGLE VIEW (MUST BE LAST) =================
+// SEND MAINTENANCE REQUEST
+router.post(
+  "/tenant/maintenance/:id",
+  isLoggedIn,
+  rentalController.sendMaintenanceRequest
+);
+
+// PAY RENT
+router.post(
+  "/tenant/pay/:id",
+  isLoggedIn,
+  rentalController.payRent
+);
+
+// OWNER FINANCE PAGE
+router.get(
+  "/owner/finance",
+  isLoggedIn,
+  isOwner,
+  rentalController.ownerFinancePage
+);
+
+// ================= SINGLE VIEW =================
 router.get("/:id", rentalController.renderSingleRental);
-
 
 module.exports = router;
