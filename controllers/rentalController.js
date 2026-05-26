@@ -4,7 +4,7 @@ const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({accessToken: mapBoxToken});
 const mongoose = require("mongoose");
-const RentalRequest = require("../models/RentalRequest");
+const RentalRequest = require("../models/rentalRequest");
 const MaintenanceRequest = require("../models/MaintenanceRequest");
 const Payment = require("../models/Payment");
 
