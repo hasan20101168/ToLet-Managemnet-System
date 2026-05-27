@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+//const MongoStore = require("connect-mongo");
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -46,11 +46,18 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ================= SESSION =================
-const store = MongoStore.create({
+// const store = MongoStore.create({
+//   mongoUrl: dbUrl,
+//   crypto: {
+//     secret: process.env.SESSION_SECRET
+//   },
+//   touchAfter: 24 * 3600
+// });
+ const MongoStore = require("connect-mongo");
+
+const store = new MongoStore({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SESSION_SECRET
-  },
+  crypto: { secret: process.env.SESSION_SECRET },
   touchAfter: 24 * 3600
 });
 
