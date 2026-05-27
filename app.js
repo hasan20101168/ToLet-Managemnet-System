@@ -46,14 +46,7 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ================= SESSION =================
-// const store = MongoStore.create({
-//   mongoUrl: dbUrl,
-//   crypto: {
-//     secret: process.env.SESSION_SECRET
-//   },
-//   touchAfter: 24 * 3600
-// });
- const MongoStore = require("connect-mongo");
+const { MongoStore } = require("connect-mongo");
 
 const store = new MongoStore({
   mongoUrl: dbUrl,
