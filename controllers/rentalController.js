@@ -1,8 +1,6 @@
 const Rental = require("../models/Rental");
 const { cloudinary } = require("../config/cloudinary");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
-const mapBoxToken = process.env.MAPBOX_TOKEN;
-const geocoder = mbxGeocoding({accessToken: mapBoxToken});
 const mongoose = require("mongoose");
 const RentalRequest = require("../models/rentalRequest");
 const MaintenanceRequest = require("../models/MaintenanceRequest");
@@ -168,7 +166,7 @@ exports.renderAllRentals = async (req, res) => {
       query.availableFrom = { $gte: new Date(availableFrom) };
     }
 
-    const limit = 6;                        // max 6 cards per page
+    const limit = 6;
     const currentPage = Math.max(1, Number(page));
     const skip = (currentPage - 1) * limit;
 
@@ -371,10 +369,14 @@ exports.renderCreateForm = (req, res) => {
 // CREATE (VIEW)
 exports.createRentalView = async (req, res) => {
   try {
+    // ✅ Geocoder initialized here so MAPBOX_TOKEN is available at runtime
+    const geocoder = mbxGeocoding({ accessToken: process.env.MAPBOX_TOKEN });
+
     const geoData = await geocoder.forwardGeocode({
       query: req.body.address,
       limit: 1
-    }).send()
+    }).send();
+
     const rental = new Rental(req.body);
     rental.geometry = geoData.body.features[0].geometry;
 
@@ -388,7 +390,6 @@ exports.createRentalView = async (req, res) => {
     }
 
     await rental.save();
-    // console.log(rental);
 
     res.redirect("/rentals/owner/dashboard");
 
