@@ -60,15 +60,9 @@ store.on("error", () => {
 
 app.use(session({
   secret: process.env.SESSION_SECRET || "secretkey",
-
   resave: false,
-
   saveUninitialized: false,
-
-  store: MongoStore.create({
-    mongoUrl: process.env.DB_URL
-  }),
-
+  store: store, // ✅ reuse the store created above
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true
