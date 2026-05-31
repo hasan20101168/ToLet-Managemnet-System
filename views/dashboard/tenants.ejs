@@ -16,13 +16,35 @@
 
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <div class="dashboard-layout">
 
   <%- include("../partials/sidebar") %>
 
   <main class="dashboard-main">
 
-    <div class="page-header">
+    <!-- TOPBAR -->
+<div class="topbar">
+
+  <div class="mobile-menu-btn d-lg-none">
+    <button id="openSidebar" class="btn btn-dark">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input
+      type="text"
+      placeholder="Search payments, tenants..."
+    >
+  </div>
+
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
       <div>
         <h2>Tenant Requests</h2>
         <p>
@@ -136,6 +158,32 @@
   </main>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const openBtn = document.getElementById("openSidebar");
+  const closeBtn = document.getElementById("closeSidebar");
+
+  function closeSidebar() {
+    sidebar?.classList.remove("show");
+    overlay?.classList.remove("show");
+  }
+
+  openBtn?.addEventListener("click", () => {
+    sidebar?.classList.add("show");
+    overlay?.classList.add("show");
+  });
+
+  closeBtn?.addEventListener("click", closeSidebar);
+  overlay?.addEventListener("click", closeSidebar);
+
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

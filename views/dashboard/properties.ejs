@@ -16,6 +16,7 @@
 </head>
 
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="dashboard-layout">
 
@@ -25,6 +26,12 @@
 
     <!-- Topbar -->
     <div class="topbar">
+
+      <div class="mobile-menu-btn d-lg-none">
+        <button id="openSidebar" class="btn btn-dark">
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
 
       <div class="search-box">
         <i class="bi bi-search"></i>
@@ -65,7 +72,7 @@
     </div>
 
     <!-- Table -->
-    <div class="property-table-card">
+    <div class="property-table-wrapper">
 
       <table class="property-table">
 
@@ -167,6 +174,30 @@
   </main>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const openBtn = document.getElementById("openSidebar");
+  const closeBtn = document.getElementById("closeSidebar");
+
+  function closeSidebar() {
+    sidebar?.classList.remove("show");
+    overlay?.classList.remove("show");
+  }
+
+  openBtn?.addEventListener("click", () => {
+    sidebar?.classList.add("show");
+    overlay?.classList.add("show");
+  });
+
+  closeBtn?.addEventListener("click", closeSidebar);
+  overlay?.addEventListener("click", closeSidebar);
+
+});
+</script>
 
 </body>
 </html>

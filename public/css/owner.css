@@ -1141,3 +1141,82 @@ body{
     flex: 1;
   }
 }
+
+@media (max-width: 768px){
+
+  .lease-card-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  .lease-table{
+    table-layout:auto;
+  }
+
+  .lease-table th,
+  .lease-table td{
+    padding:10px 8px;
+    font-size:12px;
+  }
+
+  .action-btn{
+    padding:4px 8px;
+    font-size:11px;
+    white-space:nowrap;
+  }
+
+  .lease-table th:last-child,
+  .lease-table td:last-child{
+    text-align:center;
+  }
+}
+
+/* ================= FINANCE PAGE ================= */
+
+.payment-history-card{
+  padding:20px;
+}
+
+.payment-item{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+  background:#fff;
+}
+
+@media (max-width:768px){
+
+  .page-header h2{
+    font-size:1.6rem;
+  }
+
+  .payment-item{
+    padding:16px;
+  }
+
+  .payment-item .d-flex{
+    flex-direction:column;
+    align-items:flex-start !important;
+  }
+
+  .payment-item .text-end{
+    text-align:left !important;
+    width:100%;
+    padding-top:12px;
+    border-top:1px solid #eee;
+  }
+
+  .payment-item h4{
+    margin-bottom:10px;
+  }
+
+  .search-box{
+    width:100%;
+  }
+
+  .topbar{
+    gap:12px;
+  }
+}

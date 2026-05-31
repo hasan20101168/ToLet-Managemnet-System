@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Rental</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,24 +11,22 @@
 
 <body>
 
-<div class="container mt-5">
-
+<div class="page-wrapper">
   <div class="form-card">
 
-    <h3 class="mb-4">➕ Add New Rental</h3>
+    <h3 class="page-title">➕ Add New Rental</h3>
 
     <form action="/rentals" method="POST" enctype="multipart/form-data">
 
       <!-- Basic Info -->
       <div class="form-section-title">Basic Information</div>
 
-      <div class="row mb-3">
-        <div class="col-md-6">
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6">
           <label class="form-label">Property Name</label>
           <input type="text" name="name" class="form-control" required>
         </div>
-
-        <div class="col-md-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label">Rent Price (৳)</label>
           <input type="number" name="rentPrice" class="form-control" required>
         </div>
@@ -38,20 +37,24 @@
         <input type="text" name="address" class="form-control" required>
       </div>
 
+      <hr class="section-divider">
+
       <!-- Features -->
       <div class="form-section-title">Property Features</div>
 
-      <div class="row mb-3">
-        <div class="col"><input type="number" name="beds" class="form-control" placeholder="Beds"></div>
-        <div class="col"><input type="number" name="baths" class="form-control" placeholder="Baths"></div>
-        <div class="col"><input type="number" name="dining" class="form-control" placeholder="Dining"></div>
-        <div class="col"><input type="number" name="drawing" class="form-control" placeholder="Drawing"></div>
-        <div class="col"><input type="number" name="porch" class="form-control" placeholder="Porch"></div>
+      <div class="features-grid">
+        <input type="number" name="beds"     class="form-control" placeholder="Beds">
+        <input type="number" name="baths"    class="form-control" placeholder="Baths">
+        <input type="number" name="dining"   class="form-control" placeholder="Dining">
+        <input type="number" name="drawing"  class="form-control" placeholder="Drawing">
+        <input type="number" name="porch"    class="form-control" placeholder="Porch">
       </div>
 
       <div class="mb-3">
         <input type="number" name="squareFeet" class="form-control" placeholder="Square Feet">
       </div>
+
+      <hr class="section-divider">
 
       <!-- Description -->
       <div class="form-section-title">Description</div>
@@ -66,26 +69,37 @@
         <input type="date" name="availableFrom" class="form-control">
       </div>
 
+      <hr class="section-divider">
+
       <!-- Image -->
       <div class="form-section-title">Upload Image</div>
 
       <div class="mb-3">
-        <input type="file" name="image" class="form-control" onchange="previewImage(event)">
-        <img id="imagePreview" class="preview-img" style="display:none;">
+        <input type="file" name="image" class="form-control" accept="image/*"
+               onchange="previewImage(event)">
+        <img id="imagePreview" class="preview-img" style="display:none;" alt="Preview">
       </div>
 
       <!-- Buttons -->
-      <div class="d-flex justify-content-between">
+      <div class="action-row">
         <a href="/rentals" class="btn btn-secondary">Cancel</a>
-        <button class="btn btn-primary">Create Rental</button>
+        <button type="submit" class="btn btn-primary">Create Rental</button>
       </div>
 
     </form>
 
   </div>
-
 </div>
 
-<script src="/js/main.js"></script>
+<script>
+  function previewImage(event) {
+    const img = document.getElementById('imagePreview');
+    const file = event.target.files[0];
+    if (!file) return;
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+  }
+</script>
+
 </body>
 </html>

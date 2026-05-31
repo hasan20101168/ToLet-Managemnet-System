@@ -584,28 +584,28 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebarOverlay");
 
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("sidebarOverlay");
-  const openBtn = document.getElementById("openSidebar");
-  const closeBtn = document.getElementById("closeSidebar");
+document.getElementById("openSidebar")
+  ?.addEventListener("click", () => {
 
-  function openSidebar() {
-    sidebar?.classList.add("show");
-    overlay?.classList.add("show");
-  }
-
-  function closeSidebar() {
-    sidebar?.classList.remove("show");
-    overlay?.classList.remove("show");
-  }
-
-  openBtn?.addEventListener("click", openSidebar);
-  closeBtn?.addEventListener("click", closeSidebar);
-  overlay?.addEventListener("click", closeSidebar);
+    sidebar.classList.add("show");
+    overlay.classList.add("show");
 
 });
+
+document.getElementById("closeSidebar")
+  ?.addEventListener("click", closeSidebar);
+
+overlay?.addEventListener("click", closeSidebar);
+
+function closeSidebar() {
+
+  sidebar.classList.remove("show");
+  overlay.classList.remove("show");
+
+}
 </script>
 
 </body>
