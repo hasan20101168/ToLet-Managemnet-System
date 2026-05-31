@@ -2,82 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Rental</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    :root {
+      --blue:    #0d6efd;
+      --blue-dk: #0a58ca;
+      --radius:  14px;
+      --shadow:  0 8px 24px rgba(0,0,0,0.09);
+    }
+
+    body {
+      background: #f0f4ff;
+      min-height: 100dvh;
+      font-size: 1rem;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+
+    @media (min-width: 576px) {
+      .page-wrapper { padding: 40px 24px 64px; }
+    }
+
+    .form-card {
+      background: #fff;
+      padding: 20px 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    @media (min-width: 576px) {
+      .form-card { padding: 32px 28px; }
+    }
+
+    .page-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #111;
+    }
+
+    @media (min-width: 576px) {
+      .page-title { font-size: 1.6rem; }
+    }
+
+    .form-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: #eef3ff;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      margin-top: 4px;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1.5px solid #dce3f0;
+      padding: 11px 13px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-control:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(13,110,253,0.12);
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    /* 2-col on mobile → 3-col mid → 5-col desktop */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 480px) {
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (min-width: 640px) {
+      .features-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    /* Current image */
+    .current-img-wrap {
+      margin-bottom: 12px;
+    }
+
+    .current-img-label {
+      font-size: 0.78rem;
+      color: #6c757d;
+      margin-bottom: 6px;
+    }
+
+    .preview-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+    }
+
+    #imagePreview {
+      margin-top: 12px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1.5px solid #f0f0f0;
+      margin: 20px 0 16px;
+    }
+
+    /* Action buttons */
+    .action-row {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    @media (min-width: 400px) {
+      .action-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .btn {
+      font-size: 1rem;
+      border-radius: 10px;
+      padding: 11px 22px;
+    }
+
+    @media (max-width: 399px) {
+      .btn { width: 100%; }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container mt-5">
-
+<div class="page-wrapper">
   <div class="form-card">
 
-    <h3 class="mb-4">✏️ Edit Rental</h3>
+    <h3 class="page-title">✏️ Edit Rental</h3>
 
     <form action="/rentals/<%= rental._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
 
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label>Property Name</label>
+      <!-- Basic Info -->
+      <div class="form-section-title">Basic Information</div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6">
+          <label class="form-label">Property Name</label>
           <input type="text" name="name" value="<%= rental.name %>" class="form-control">
         </div>
-
-        <div class="col-md-6">
-          <label>Rent Price</label>
+        <div class="col-12 col-sm-6">
+          <label class="form-label">Rent Price (৳)</label>
           <input type="number" name="rentPrice" value="<%= rental.rentPrice %>" class="form-control">
         </div>
       </div>
 
       <div class="mb-3">
+        <label class="form-label">Address</label>
         <input type="text" name="address" value="<%= rental.address %>" class="form-control">
       </div>
 
-      <div class="row mb-3">
-        <div class="col"><input type="number" name="beds" value="<%= rental.beds %>" class="form-control"></div>
-        <div class="col"><input type="number" name="baths" value="<%= rental.baths %>" class="form-control"></div>
-        <div class="col"><input type="number" name="dining" value="<%= rental.dining %>" class="form-control"></div>
-        <div class="col"><input type="number" name="drawing" value="<%= rental.drawing %>" class="form-control"></div>
-        <div class="col"><input type="number" name="porch" value="<%= rental.porch %>" class="form-control"></div>
+      <hr class="section-divider">
+
+      <!-- Features -->
+      <div class="form-section-title">Property Features</div>
+
+      <div class="features-grid">
+        <input type="number" name="beds"    value="<%= rental.beds %>"    class="form-control" placeholder="Beds">
+        <input type="number" name="baths"   value="<%= rental.baths %>"   class="form-control" placeholder="Baths">
+        <input type="number" name="dining"  value="<%= rental.dining %>"  class="form-control" placeholder="Dining">
+        <input type="number" name="drawing" value="<%= rental.drawing %>" class="form-control" placeholder="Drawing">
+        <input type="number" name="porch"   value="<%= rental.porch %>"   class="form-control" placeholder="Porch">
       </div>
 
       <div class="mb-3">
-        <input type="number" name="squareFeet" value="<%= rental.squareFeet %>" class="form-control">
+        <input type="number" name="squareFeet" value="<%= rental.squareFeet %>" class="form-control" placeholder="Square Feet">
       </div>
 
-      <div class="mb-3">
-        <textarea name="description" class="form-control"><%= rental.description %></textarea>
-      </div>
+      <hr class="section-divider">
+
+      <!-- Description -->
+      <div class="form-section-title">Description</div>
 
       <div class="mb-3">
+        <textarea name="description" class="form-control" rows="4"><%= rental.description %></textarea>
+      </div>
+
+      <!-- Availability -->
+      <div class="mb-3">
+        <label class="form-label">Available From</label>
         <input type="date" name="availableFrom"
           value="<%= rental.availableFrom ? rental.availableFrom.toISOString().split('T')[0] : '' %>"
           class="form-control">
       </div>
 
-      <!-- Current Image -->
+      <hr class="section-divider">
+
+      <!-- Image -->
+      <div class="form-section-title">Property Image</div>
+
       <% if (rental.image && rental.image.url) { %>
-        <img src="<%= rental.image.url %>" class="preview-img">
+        <div class="current-img-wrap">
+          <p class="current-img-label">Current image</p>
+          <img src="<%= rental.image.url %>" class="preview-img" alt="Current property image">
+        </div>
       <% } %>
 
-      <!-- Upload New -->
       <div class="mb-3">
-        <input type="file" name="image" class="form-control" onchange="previewImage(event)">
-        <img id="imagePreview" class="preview-img" style="display:none;">
+        <label class="form-label">Upload new image</label>
+        <input type="file" name="image" class="form-control" accept="image/*"
+               onchange="previewImage(event)">
+        <img id="imagePreview" class="preview-img" style="display:none;" alt="New image preview">
       </div>
 
-      <div class="d-flex justify-content-between">
+      <!-- Buttons -->
+      <div class="action-row">
         <a href="/rentals/<%= rental._id %>" class="btn btn-secondary">Cancel</a>
-        <button class="btn btn-primary">Update Rental</button>
+        <button type="submit" class="btn btn-primary">Update Rental</button>
       </div>
 
     </form>
 
   </div>
-
 </div>
 
-<script src="/js/main.js"></script>
+<script>
+  function previewImage(event) {
+    const img = document.getElementById('imagePreview');
+    const file = event.target.files[0];
+    if (!file) return;
+    img.src = URL.createObjectURL(file);
+    img.style.display = 'block';
+  }
+</script>
+
 </body>
 </html>

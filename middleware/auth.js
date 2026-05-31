@@ -9,10 +9,15 @@ exports.isLoggedIn = (req, res, next) => {
 
 // ================= ROLE CHECKS =================
 exports.isOwner = (req, res, next) => {
-  if (!req.session.user || req.session.user.role !== "owner") {
-    return res.status(403).send("Access denied (Owner only)");
+
+  if (
+    req.session.user &&
+    req.session.user.role === "owner"
+  ) {
+    return next();
   }
-  next();
+
+  res.redirect("/login");
 };
 
 exports.isAdmin = (req, res, next) => {

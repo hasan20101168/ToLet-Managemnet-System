@@ -36,6 +36,14 @@
     <!-- TOPBAR -->
     <div class="topbar">
 
+      <div class="mobile-menu-btn d-lg-none">
+
+        <button id="openSidebar" class="btn btn-dark">
+          <i class="bi bi-list"></i>
+        </button>
+
+      </div>
+
       <div class="search-box">
         <i class="bi bi-search"></i>
 
@@ -574,6 +582,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebarOverlay");
+
+document.getElementById("openSidebar")
+  ?.addEventListener("click", () => {
+
+    sidebar.classList.add("show");
+    overlay.classList.add("show");
+
+});
+
+document.getElementById("closeSidebar")
+  ?.addEventListener("click", closeSidebar);
+
+overlay?.addEventListener("click", closeSidebar);
+
+function closeSidebar() {
+
+  sidebar.classList.remove("show");
+  overlay.classList.remove("show");
+
+}
+</script>
 
 </body>
 </html>

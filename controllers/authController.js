@@ -31,38 +31,57 @@ exports.register = async (req, res) => {
 // ================= LOGIN (USER) =================
 exports.login = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.send("User not found");
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.send("Wrong password");
+    if (!user) {
+      return res.send("User not found");
+    }
 
-    // 🔥 REGENERATE SESSION (CRITICAL FIX)
-    req.session.regenerate(err => {
+    const match = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!match) {
+      return res.send("Wrong password");
+    }
+
+    // Save user in session
+    req.session.user = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+
+    // IMPORTANT
+    req.session.save(err => {
+
       if (err) {
         console.log(err);
-        return res.send("Session error");
+        return res.send("Session save failed");
       }
 
-      req.session.user = {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      };
-
-      // Role-based redirect
+      // OWNER
       if (user.role === "owner") {
         return res.redirect("/rentals/owner/dashboard");
       }
 
+      // TENANT
       if (user.role === "tenant") {
         return res.redirect("/rentals");
       }
 
+      // ADMIN
+      // if (user.role === "admin") {
+      //   return res.redirect("/admin/dashboard");
+      // }
+
       res.redirect("/rentals");
+
     });
 
   } catch (err) {

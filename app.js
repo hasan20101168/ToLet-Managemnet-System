@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const path = require("path");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+//const MongoStore = require("connect-mongo");
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -25,68 +25,87 @@ const io = new Server(server);
 
 global.io = io;
 
+// ================= DATABASE =================
+
+const dbUrl = process.env.DB_URL;
+// local db: "mongodb://127.0.0.1:27017/toletDB"
+
+mongoose.connect(dbUrl)
+.then(() => {
+  console.log("MongoDB Atlas Connected");
+})
+.catch((err) => {
+  console.log("DB Error:", err);
+});
+
 // ================= MIDDLEWARE =================
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ================= SESSION =================
+const { MongoStore } = require("connect-mongo");
+
+const store = new MongoStore({
+  mongoUrl: dbUrl,
+  crypto: { secret: process.env.SESSION_SECRET },
+  touchAfter: 24 * 3600
+});
+
+store.on("error", () => {
+  console.log("Mongo Session Store Error");
+});
+
 app.use(session({
   secret: process.env.SESSION_SECRET || "secretkey",
   resave: false,
   saveUninitialized: false,
-  unset: "destroy", // 🔥 ADD THIS
-  store: MongoStore.create({
-    mongoUrl: "mongodb://127.0.0.1:27017/toletDB"
-  }),
+  store: store, // ✅ reuse the store created above
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24
+    maxAge: 1000 * 60 * 60 * 24,
+    httpOnly: true
   }
 }));
 
-//  Make user available in all EJS views
+// ================= GLOBAL USER =================
+
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user;
   next();
 });
 
 // ================= VIEW ENGINE =================
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ================= DATABASE =================
-// const dbUrl = process.env.DB_URL;
-// "mongodb://127.0.0.1:27017/toletDB"
-mongoose.connect("mongodb://127.0.0.1:27017/toletDB")
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log("DB Error:", err));
-
 // ================= ROUTES =================
-app.use("/", authRoutes);          // auth routes (login/register)
-app.use("/rentals", rentalRoutes); // rental routes
+
+app.use("/", authRoutes);
+app.use("/rentals", rentalRoutes);
 app.use("/", adminRoutes);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 
-// Root redirect
+// ================= ROOT =================
+
 app.get("/", (req, res) => {
-  res.redirect("/"); // landing page
+  res.redirect("/rentals");
 });
 
 // ================= SOCKET.IO =================
 
 io.on("connection", (socket) => {
-  // console.log("User connected");
 
-  // Join personal room
   socket.on("join", (userId) => {
     socket.join(userId);
   });
 
-  // Send message
   socket.on("sendMessage", async (data) => {
     try {
+
       const savedMessage = await Message.create({
         rental: data.rentalId,
         sender: data.senderId,
@@ -98,10 +117,8 @@ io.on("connection", (socket) => {
         .populate("sender", "name role")
         .populate("receiver", "name role");
 
-      // send to receiver
       io.to(data.receiverId).emit("receiveMessage", populated);
 
-      // send back to sender
       io.to(data.senderId).emit("receiveMessage", populated);
 
     } catch (err) {
@@ -110,16 +127,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // console.log("User disconnected");
+    // disconnected
   });
 });
 
 // ================= ERROR =================
+
 app.use((req, res) => {
   res.status(404).send("Page Not Found");
 });
 
 // ================= SERVER =================
-server.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

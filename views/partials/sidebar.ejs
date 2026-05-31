@@ -1,90 +1,88 @@
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- ================= SIDEBAR ================= -->
-  <aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
-    <div class="sidebar-top">
+  <!-- Mobile Close Button -->
+  <button class="sidebar-close" id="closeSidebar">
+    <i class="bi bi-x-lg"></i>
+  </button>
 
-      <div class="brand">
+  <div class="sidebar-top">
 
-        <div class="brand-logo">
-          <i class="bi bi-buildings"></i>
-        </div>
+    <div class="brand">
 
-        <div>
-          <h4>To-Let</h4>
-          <p>Management Suite</p>
-        </div>
-
+      <div class="brand-logo">
+        <i class="bi bi-buildings"></i>
       </div>
 
-      <nav class="sidebar-nav">
+      <div>
+        <h4>To-Let</h4>
+        <p>Management Suite</p>
+      </div>
 
-        <!-- <a href="/rentals/owner/dashboard" class="nav-item active">
-          <i class="bi bi-grid-1x2"></i>
-          Dashboard
-        </a>
+    </div>
 
-        <a href="/rentals/new" class="nav-item">
-          <i class="bi bi-building"></i>
-          Properties
-        </a> -->
-        <a href="/rentals/owner/dashboard"
-        class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
+    <nav class="sidebar-nav">
+
+      <a href="/rentals/owner/dashboard"
+         class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
         <i class="bi bi-grid"></i>
         Dashboard
-        </a>
+      </a>
 
-        <a href="/rentals/owner/properties"
-        class="nav-item <%= activePage === 'properties' ? 'active' : '' %>">
+      <a href="/rentals/owner/properties"
+         class="nav-item <%= activePage === 'properties' ? 'active' : '' %>">
         <i class="bi bi-buildings"></i>
         Properties
-        </a>
+      </a>
 
-        <a href="/rentals/owner/finance"
-        class="nav-item <%= activePage === 'finance' ? 'active' : '' %>">
-          <i class="bi bi-cash-stack"></i>
-          Finance
-        </a>
+      <a href="/rentals/owner/finance"
+         class="nav-item <%= activePage === 'finance' ? 'active' : '' %>">
+        <i class="bi bi-cash-stack"></i>
+        Finance
+      </a>
 
-        <a href="/rentals/owner/tenants"
-        class="nav-item <%= activePage === 'tenants' ? 'active' : '' %>">
-          <i class="bi bi-people"></i>
-          Tenants
-        </a>
+      <a href="/rentals/owner/tenants"
+         class="nav-item <%= activePage === 'tenants' ? 'active' : '' %>">
+        <i class="bi bi-people"></i>
+        Tenants
+      </a>
 
+      <a href="/messages/owner/inbox"
+         class="nav-item <%= activePage === 'messages' ? 'active' : '' %>">
+        <i class="bi bi-chat-dots"></i>
+        Messages
+      </a>
 
-        <a href="/messages/owner/inbox" class="nav-item">
-          <i class="bi bi-chat-dots"></i>
-          Messages
-        </a>
+    </nav>
 
-      </nav>
+  </div>
 
-    </div>
+  <!-- bottom -->
+  <div class="sidebar-bottom">
 
-    <!-- bottom -->
-    <div class="sidebar-bottom">
+    <div class="profile-box">
 
-      <div class="profile-box">
-
-        <div class="profile-avatar">
-          <i class="bi bi-person-fill"></i>
-        </div>
-
-        <div class="profile-info">
-          <h6><%= currentUser?.name || "Owner" %></h6>
-          <p>Property Owner</p>
-        </div>
-
+      <div class="profile-avatar">
+        <i class="bi bi-person-fill"></i>
       </div>
 
-      <form action="/logout" method="POST" class="logout-form">
-        <button type="submit" class="logout-btn">
-          <i class="bi bi-box-arrow-right"></i>
-          Logout
-        </button>
-      </form>
+      <div class="profile-info">
+        <h6><%= currentUser?.name || "Owner" %></h6>
+        <p>Property Owner</p>
+      </div>
 
     </div>
 
-  </aside>
+    <form action="/logout" method="POST" class="logout-form">
+      <button type="submit" class="logout-btn">
+        <i class="bi bi-box-arrow-right"></i>
+        Logout
+      </button>
+    </form>
+
+  </div>
+
+</aside>
